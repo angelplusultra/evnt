@@ -42,8 +42,9 @@ const userSchema = new mongoose.Schema({
   activity: {
     type: [new mongoose.Schema(
       {
-        timeStamp: Date,
         activityDetails: String,
+        user: mongoose.Schema.Types.ObjectId,
+        reference: mongoose.Schema.Types.ObjectId,
       },
       { timestamps: true },
     ),

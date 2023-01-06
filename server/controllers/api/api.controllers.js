@@ -33,11 +33,20 @@ const controller = {
     res.send('Get Single Event');
   }),
 
-  // * @desc Get Followed Activity
+  // * @desc Get the activity of users the user is following
   // * @route GET /api/activity
   // * @access PRIVATE
   GetActivity: asyncHanlder(async (req, res) => {
-    res.send('Get Activity');
+    //! Experimental approach here, might need to be refactored
+    const { following } = req.user;
+    const activity = await Users.find().where('_id').in(following).select('activity').lean();
+    console.log(activity)
+    const allActivity = activity.map((a) => a.activity);
+    console.log(allActivity)
+    const flattenedActivity = allActivity.flat();
+    flattenedActivity.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    res.json(flattenedActivity);
   }),
 
   // * @desc Create a new Event
@@ -60,8 +69,10 @@ const controller = {
     const [county] = counties;
     event.location.county = county;
     // event.location.county = "New York County"
+    await Users.findByIdAndUpdate(host, { $push: { activity: { activityDetails: `${req.user.username} created a new event called ${title}`, ref1: host, ref2: event._id } } }, { new: true });
+    
+    await event.save();
 
-    event.save();
     res.json(event);
   }),
   // * @desc Follow/Unfollow a User
@@ -71,11 +82,16 @@ const controller = {
   FollowUser: asyncHanlder(async (req, res) => {
     const { _id } = req.user;
     const { id: userId } = req.params;
-    console.log(typeof _id);
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       res.status(400);
       throw new Error('Invalid user id');
     }
+
+    if(userId === _id.toHexString()) {
+      res.status(400);
+      throw new Error('You cannot follow yourself');
+    }
+
 
     const userExist = await Users.findById(userId).lean();
 
@@ -96,11 +112,24 @@ const controller = {
       return res.status(200).send({ message: `${userExist.username} unfollowed` });
     }
     user.following.push(userId);
+    // ! This is experimental, attempting to populate an array of strings containing the users activity with references to other users or events. We send the user id and then the client can make a request to the server to get the actual display name and the id can be used on the frontend to link to the user profile or event page via a route param
+    user.activity.push({
+      activityDetails: `${user._id} followed ${userExist._id}`,
+    });
     await user.save();
     return res.status(200).send({ message: `${userExist.username} followed` });
 
     // const user = await Users
     //   .findByIdAndUpdate(_id, { $push: { followed: userId } }, { new: true }).lean();
+  }),
+  GetMe: asyncHanlder(async (req, res) => {
+    const { _id } = req.user;
+    const user = await Users.findById(_id).lean();
+
+    //sort following by most recent createdAt
+
+    user.activity.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    res.json(user);
   }),
 
 };

@@ -6,6 +6,8 @@ const router = Router();
 
 router.route('/:id')
   .put(apiController.FollowUser);
+
 router.get('/activity', apiController.GetActivity);
+router.get('/me', apiController.GetMe);
 
 export default router;

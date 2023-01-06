@@ -89,9 +89,8 @@ const controller = {
 
     };
 
-    const info = await transporter.sendMail(msg);
+    await transporter.sendMail(msg);
     // ! Later on, make it so the user can resend the email if they didn't get it
-    if (!info) console.log('Email not sent');
 
     res.status(201).json({ message: 'User created successfully, please verify your account', user: savedUser });
   }),

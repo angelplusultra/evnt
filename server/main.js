@@ -19,6 +19,7 @@ const app = express();
 //! Never used helmet() before, be aware of this
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
+
 app.use(morgan('dev'));
 
 app.use(cors());

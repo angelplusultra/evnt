@@ -1,8 +1,9 @@
 import { Router } from 'express';
 // eslint-disable-next-line import/extensions
-import apiController from '../../controllers/api/api.controllers.js';
 import authorize from '../../middleware/authorize.js';
 import verifyCheck from '../../middleware/verifyCheck.js';
+import eventRouter from './events/events.routes.js';
+import userRouter from './users/users.routes.js';
 
 const router = Router();
 
@@ -10,12 +11,7 @@ router.use(authorize);
 
 router.use(verifyCheck);
 
-router.route('/events')
-  .get(apiController.GetEvents)
-  .post(apiController.CreateEvent);
-
-router.get('/activity', apiController.GetActivity);
-
-router.post('/email', apiController.SendEmail);
+router.use('/events', eventRouter);
+router.use('/users', userRouter);
 
 export default router;

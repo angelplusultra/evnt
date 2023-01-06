@@ -9,7 +9,7 @@ function verifyCheck(req, res, next) {
     res.status(401);
     throw new Error('User has not verified their account');
   } else {
-    next();
+    return next();
   }
 }
 

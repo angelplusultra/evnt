@@ -45,19 +45,18 @@ const controller = {
       activity: [{ activityDetails: 'Signed up' }],
     });
 
-    newUser.save();
+    const savedUser = await newUser.save();
 
-    if (!newUser) {
+    if (!savedUser) {
       res.status(400);
       throw new Error('Invalid user data');
     }
 
-    newUser.password = undefined;
+    savedUser.password = undefined;
 
-    res.status(201).json({ message: 'User created successfully, please verify your account', user: newUser });
 
     // eslint-disable-next-line no-underscore-dangle
-    const verifyToken = helpers.genToken(newUser._id);
+    const verifyToken = helpers.genToken(savedUser._id);
 
     const transporter = nodemailer.createTransport({
       service: 'outlook',
@@ -92,8 +91,10 @@ const controller = {
     };
 
     const info = await transporter.sendMail(msg);
-    //! Later on, make it so the user can resend the email if they didn't get it
+    // ! Later on, make it so the user can resend the email if they didn't get it
     if (!info) console.log('Email not sent');
+
+    res.status(201).json({ message: 'User created successfully, please verify your account', user: savedUser });
   }),
 
   // * @desc Validate form, Authenticate user and send token
@@ -151,6 +152,8 @@ const controller = {
       res.status(400);
       throw new Error('User could not be verified');
     }
+
+    updatedUser.password = undefined; 
 
     res.status(200).json({ message: 'User verified successfully', user: updatedUser });
   }),

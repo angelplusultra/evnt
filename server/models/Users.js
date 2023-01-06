@@ -6,6 +6,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   email: {
     type: String,
     required: true,
@@ -19,9 +23,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  //! Location tracking to be used later, for now, users are
+  //! created and get events based on a single area code they provide
   locationTracking: {
     type: [String],
     required: true,
+    default: [],
   },
   following: {
     type: [mongoose.Schema.Types.ObjectId],

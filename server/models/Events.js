@@ -27,6 +27,10 @@ const eventSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
+    county: {
+      type: String,
+      required: true,
+    },
   },
   date: {
     type: Date,
@@ -38,12 +42,9 @@ const eventSchema = new mongoose.Schema({
   },
   lineup: {
     type: [
-      new mongoose.Schema({
-        artist: {
-          type: String || mongoose.Schema.Types.ObjectId,
-          required: true,
-        },
-      }),
+
+      String || mongoose.Schema.Types.ObjectId,
+
     ],
   },
   attendance: {
@@ -59,6 +60,7 @@ const eventSchema = new mongoose.Schema({
           type: String,
           required: true,
         },
+        _id: false,
       }),
     ],
   },

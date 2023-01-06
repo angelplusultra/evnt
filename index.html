@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .hidden{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <form>
+        <input type="text" name="name" placeholder="Name of Drone">
+        <input type="number" name="year" placeholder="Release Year">
+        <input type="text" name="manufacturer" placeholder="Manufacturer">
+        <input type="submit" value="Submit">
+    </form>
+
+    <div>
+        <div class="errors">
+
+        </div>
+        <h1>Drone Name</h1>
+        <p class="name"></p>
+        <h2>Release Year</h2>
+        <p class="year"></p>
+        <h3 class="mantitle">Manufacturer</h3>
+        <p class="man"></p>
+    </div>
+    
+</body>
+<script>
+  const data = localStorage.getItem('data')
+  console.log(data)
+    if(data){
+        const formatted = JSON.parse(data)
+        
+        document.querySelector('.name').textContent = formatted.name;
+        document.querySelector('.year').textContent = formatted.year;
+        document.querySelector('.man').textContent = formatted.manufacturer
+
+    }
+
+    const form = document.querySelector('form');
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+
+        fetch(`http://localhost:5000/drones?name=${data.name}&year=${data.year}&manufacturer=${data.manufacturer}`)
+        .then(res => res.json())
+        .then(data => {
+            document.querySelector('.name').textContent = data.name;
+            document.querySelector('.year').textContent = data.year;
+            document.querySelector('.man').textContent = data.manufacturer;
+
+            if(!data.manufacturer){
+                document.querySelector('.man').classList.add('hidden')
+            }
+
+            if(!data.name){
+                document.querySelector('.name').classList.add('hidden')
+            }
+
+            if(!data.year){
+                document.querySelector('.year').classList.add('hidden')
+            }
+            if(!data.name && !data.year && !data.manufacturer){
+
+                document.querySelector('.errors').textContent = 'No results found'
+                
+            }
+            if(data){
+                localStorage.setItem('data', JSON.stringify(data))
+            }
+            
+        })
+    })
+</script>
+</html>

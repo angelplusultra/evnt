@@ -7,6 +7,9 @@ const router = Router();
 
 router.use('/api', apiRoutes);
 router.use('/auth', authRoutes);
+router.get('/drones', (req, res) => {
+  res.send(req.query);
+});
 
 router.all('*', (req, res) => {
   res.status(404);

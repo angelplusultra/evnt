@@ -4,10 +4,8 @@ import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import hbs from 'nodemailer-express-handlebars';
 import path from 'path';
-import axios from 'axios';
 import helpers from '../../helpers/helpers.js';
 import Users from '../../models/Users.js';
-
 
 const controller = {
   // * @desc Create a new User
@@ -36,8 +34,7 @@ const controller = {
 
     const hash = await helpers.hashPassword(password, res);
     // eslint-disable-next-line max-len
-    // ! This is where the error is coming from, api call is not working because we exceeded the limit of 10 calls per hour
-      
+
     const newUser = new Users({
       username,
       email,
@@ -48,25 +45,25 @@ const controller = {
       activity: [{ activityDetails: 'Signed up' }],
     });
 
-
     newUser.save();
 
     if (!newUser) {
       res.status(400);
       throw new Error('Invalid user data');
-
     }
+
+    newUser.password = undefined;
 
     res.status(201).json({ message: 'User created successfully, please verify your account', user: newUser });
 
+    // eslint-disable-next-line no-underscore-dangle
     const verifyToken = helpers.genToken(newUser._id);
 
-    // create reusable transporter object using the default SMTP transport
     const transporter = nodemailer.createTransport({
       service: 'outlook',
       auth: {
-        user: 'evntapp@outlook.com', // generated ethereal user
-        pass: 'tillery1', // generated ethereal password
+        user: 'evntapp@outlook.com',
+        pass: 'tillery1',
       },
     });
 
@@ -81,13 +78,10 @@ const controller = {
 
     transporter.use('compile', hbs(handlebarOptions));
 
-    // send mail with defined transport object
     const msg = {
-      from: '"Evnt" <evntapp@outlook.com>', // sender address
-      to: `${email}`, // list of receivers
-      subject: 'Please verify account', // Subject line
-      // text: 'Please verify your account by clicking on', // plain text body
-      // html: `<b>Please verify your account by clicking the link below</b><a href=http://localhost:5000/auth/verify/${verifyEndpoint}>http://localhost:5000/auth/${verifyEndpoint}</a>`, // html body
+      from: '"Evnt" <evntapp@outlook.com>',
+      to: `${email}`,
+      subject: 'Please verify account',
       template: 'email',
 
       context: {
@@ -145,7 +139,7 @@ const controller = {
       throw new Error('User does not exist');
     }
 
-    if (user.isVerified){
+    if (user.isVerified) {
       res.status(400);
       throw new Error('User is already verified');
     }
@@ -153,7 +147,7 @@ const controller = {
     const updatedUser = await Users
       .findByIdAndUpdate(decoded.id, { isVerified: true }, { new: true });
 
-    if (!updatedUser){
+    if (!updatedUser) {
       res.status(400);
       throw new Error('User could not be verified');
     }

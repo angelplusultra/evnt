@@ -7,7 +7,9 @@ import verifyCheck from '../../middleware/verifyCheck.js';
 const router = Router();
 
 router.use(authorize);
+
 router.use(verifyCheck);
+
 router.route('/events')
   .get(apiController.GetEvents)
   .post(apiController.CreateEvent);

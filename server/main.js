@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import * as url from 'url';
 import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
 import connectDb from './db/db.js';
 import router from './routes/index.js';
 import handleError from './middleware/handleError.js';
@@ -14,6 +16,10 @@ export const dirname = url.fileURLToPath(new URL('.', import.meta.url));
 dotenv.config({ path: path.join(dirname, '/config/.env') });
 
 const app = express();
+//! Never used helmet() before, be aware of this
+app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
+app.use(morgan('dev'));
 
 app.use(cors());
 

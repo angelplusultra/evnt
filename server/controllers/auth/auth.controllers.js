@@ -54,7 +54,6 @@ const controller = {
 
     savedUser.password = undefined;
 
-
     // eslint-disable-next-line no-underscore-dangle
     const verifyToken = helpers.genToken(savedUser._id);
 
@@ -153,7 +152,7 @@ const controller = {
       throw new Error('User could not be verified');
     }
 
-    updatedUser.password = undefined; 
+    updatedUser.password = undefined;
 
     res.status(200).json({ message: 'User verified successfully', user: updatedUser });
   }),

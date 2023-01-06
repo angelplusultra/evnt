@@ -9,7 +9,7 @@ const controller = {
   // * @desc Get all Events based on users location tracking & followed
   // * @route GET /api/events
   // * @access PRIVATE
-  GetAllEvents: async (req, res) => {
+  GetAllEvents: asyncHanlder(async (req, res) => {
     const { locationTracking, following } = req.user;
     const events = await Events.find().where('location.county').in(locationTracking).lean();
     const followedEvents = await Events.find().where('host').in(following).lean();
@@ -18,14 +18,14 @@ const controller = {
     allEvents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     res.json(allEvents);
-  },
-  GetFollowingEvents: async (req, res) => {
+  }),
+  GetFollowingEvents: asyncHanlder(async (req, res) => {
     const { following } = req.user;
     const followedEvents = await Events.find().where('host').in(following).sort({ createdAt: 'desc' })
       .lean();
 
     res.json(followedEvents);
-  },
+  }),
   // * @desc Get Single Event
   // * @route GET /api/events/:id
   // * @access PRIVATE
@@ -36,9 +36,9 @@ const controller = {
   // * @desc Get Followed Activity
   // * @route GET /api/activity
   // * @access PRIVATE
-  GetActivity: (req, res) => {
+  GetActivity: asyncHanlder(async (req, res) => {
     res.send('Get Activity');
-  },
+  }),
 
   // * @desc Create a new Event
   // * @route POST /api/events

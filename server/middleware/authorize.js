@@ -20,6 +20,7 @@ async function authorize(req, res, next) {
     delete req.user.password;
     return next();
   } catch (error) {
+    res.status(401);
     return next(new Error('Invalid Token, please acquire a new token'));
   }
 }

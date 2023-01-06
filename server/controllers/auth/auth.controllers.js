@@ -8,53 +8,54 @@ import axios from 'axios';
 import helpers from '../../helpers/helpers.js';
 import Users from '../../models/Users.js';
 
+
 const controller = {
   // * @desc Create a new User
   // * @route POST /auth/signup
   // * @access PUBLIC
   SignUp: asyncHandler(async (req, res) => {
     const {
-      email, username, password, password2, isArtist, areaCode,
+      email, username, password, password2, isArtist, areaCode, locationTracking,
     } = req.body;
 
-    helpers.signUpValidation(username, email, password, password2, areaCode);
+    helpers.signUpValidation(username, email, password, password2, areaCode, res);
 
     const takenEmail = await Users.findOne({ email }).lean();
 
-    if (takenEmail) throw new Error('User already exists with that email');
+    if (takenEmail) {
+      res.status(400);
+      throw new Error('User already exists with that email');
+    }
 
     const takenUsername = await Users.findOne({ username }).lean();
 
-    if (takenUsername) throw new Error('User already exists with that username');
+    if (takenUsername) {
+      res.status(400);
+      throw new Error('Username already taken');
+    }
 
-    const hash = await helpers.hashPassword(password);
+    const hash = await helpers.hashPassword(password, res);
+    // eslint-disable-next-line max-len
     // ! This is where the error is coming from, api call is not working because we exceeded the limit of 10 calls per hour
-    //     const locationData = await axios.get(`https://service.zipapi.us/zipcode/county/92870?X-API-KEY=${process.env.ZIP_API_KEY}`);
-
-    // if(!locationData) throw new Error('Invalid location data');
-
-    // if(locationData.data.data.county.length === 0) throw new Error('Invalid location data')
-
-    //     const { county: counties } = locationData.data.data;
-
-    //     console.log(locationData.data);
-
+      
     const newUser = new Users({
       username,
       email,
       password: hash,
       isArtist,
       areaCode,
+      locationTracking,
       activity: [{ activityDetails: 'Signed up' }],
     });
 
-    // counties.forEach((county) => {
-    //   newUser.locationTracking.push(county);
-    // });
 
     newUser.save();
 
-    if (!newUser) throw new Error('Invalid user');
+    if (!newUser) {
+      res.status(400);
+      throw new Error('Invalid user data');
+
+    }
 
     res.status(201).json({ message: 'User created successfully, please verify your account', user: newUser });
 
@@ -107,14 +108,17 @@ const controller = {
   Login: asyncHandler(async (req, res) => {
     const { emailOrUsername, password } = req.body;
 
-    helpers.loginValidation(emailOrUsername, password);
+    helpers.loginValidation(emailOrUsername, password, res);
 
     const user = await Users
       .findOne({ $or: [{ email: emailOrUsername }, { username: emailOrUsername }] }).lean();
 
-    if (!user) throw new Error('User does not exist');
+    if (!user) {
+      res.status(400);
+      throw new Error('User does not exist');
+    }
 
-    await helpers.comparePassword(password, user.password);
+    await helpers.comparePassword(password, user.password, res);
 
     // eslint-disable-next-line no-underscore-dangle
     const token = helpers.genToken(user._id);
@@ -136,14 +140,23 @@ const controller = {
 
     const user = await Users.findById(decoded.id).lean();
 
-    if (!user) throw new Error('User does not exist');
+    if (!user) {
+      res.status(400);
+      throw new Error('User does not exist');
+    }
 
-    if (user.isVerified) throw new Error('User is already verified');
+    if (user.isVerified){
+      res.status(400);
+      throw new Error('User is already verified');
+    }
 
     const updatedUser = await Users
       .findByIdAndUpdate(decoded.id, { isVerified: true }, { new: true });
 
-    if (!updatedUser) throw new Error('User could not be verified');
+    if (!updatedUser){
+      res.status(400);
+      throw new Error('User could not be verified');
+    }
 
     res.status(200).json({ message: 'User verified successfully', user: updatedUser });
   }),

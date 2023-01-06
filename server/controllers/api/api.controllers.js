@@ -9,9 +9,10 @@ const controller = {
   // * @route GET /api/events
   // * @access PRIVATE
   GetEvents: async (req, res) => {
-    console.log(req.user);
-    const events = await Events.find({}).lean();
-    res.send('Get Events');
+    const { user } = req;
+    const { locationTracking, followed } = user;
+    const events = await Events.find().where('location.county').in(locationTracking).lean();
+    res.send(events);
   },
   // * @desc Get Followed Activity
   // * @route GET /api/activity
@@ -34,19 +35,21 @@ const controller = {
     const {
       title, host, location, date, genre, lineup, attendance,
     } = req.body;
-    console.log(res.statusCode);
+
     helpers.eventValidator(title, host, location, date, genre, lineup, attendance, res);
 
     // const locationData = await axios.get(`https://service.zipapi.us/zipcode/county/${location.zipcode}?X-API-KEY=${process.env.ZIP_API_KEY}`);
 
-    // const { counties } = locationData.data.data;
+    // const { county: counties } = locationData.data.data;
 
     const event = new Events({
       title, host, location, date, genre, lineup, attendance,
     });
 
     // event.location.county = counties[0];
+    event.location.county = "New York County"
 
+        event.save();
     res.json(event);
   }),
   SendEmail: async (req, res) => {

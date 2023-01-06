@@ -18,6 +18,7 @@ async function authorize(req, res, next) {
     req.user = await Users.findById(decoded.id).lean();
 
     delete req.user.password;
+
     return next();
   } catch (error) {
     res.status(401);

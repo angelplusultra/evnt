@@ -60,9 +60,14 @@ const controller = {
     const {
       title, host, location, date, genre, lineup, attendance,
     } = req.body;
-return console.log(req.body, 'here')
-    helpers.eventValidator(title, host, location, date, genre, lineup, attendance, res);
 
+    // @desc Data Validation
+    helpers.validateEventData(host, location, date, attendance, res);
+
+    if (host !== req.user._id.toString()) {
+      res.status(400);
+      throw new Error('You cannot create an event for another user');
+    }
     const locationData = await axios.get(`https://service.zipapi.us/zipcode/county/${location.zipCode}?X-API-KEY=${process.env.ZIP_API_KEY}`);
 
     const { county: counties } = locationData.data.data;
@@ -73,7 +78,7 @@ return console.log(req.body, 'here')
     const [county] = counties;
     event.location.county = county;
     // event.location.county = "New York County"
-    await Users.findByIdAndUpdate(host, { $push: { activity: { activityDetails: `${req.user.username} created a new event called ${title}`, ref1: host, ref2: event._id } } }, { new: true });
+    await Users.findByIdAndUpdate(host, { $push: { activity: { activityDetails: `${host} created a new event called ${title}`, ref1: host, ref2: event._id } } }, { new: true });
 
     await event.save();
 

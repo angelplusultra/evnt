@@ -17,6 +17,8 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));\
 
 To-do
 
+Protecxxt the ability of a user making an event for someone else aka the host
+
 Create get sinmgle event controller
 
 create get single user controller 

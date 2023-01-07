@@ -63,7 +63,67 @@ const controller = {
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
     );
 
-    res.json(flattenedActivity);
+    // * Replace all the ids in the activityDetails with the users and events names
+
+    // eslint-disable-next-line consistent-return
+    const formattedArray = flattenedActivity.map(async (a) => {
+      if (a.activityDetails.includes('followed')) {
+        const userId = a.activityDetails.split(' ')[0];
+        const followedId = a.activityDetails.split(' ')[2];
+
+        const user = await Users.findById(userId).select('username').lean();
+        const followed = await Users.findById(followedId).select('username').lean();
+
+        if (!user) {
+          return {
+            activityDetails: `Deleted User followed ${followed.username}`,
+            userId,
+            followedId,
+          };
+        }
+        if (!followed) {
+          return {
+            activityDetails: `${user.username} followed Deleted User`,
+            userId,
+            followedId,
+          };
+        }
+        return {
+          activityDetails: `${user.username} followed ${followed.username}`,
+          activityType: 'Follow',
+          user: {
+            id: userId,
+            username: user.username,
+          },
+          followed: {
+            id: followedId,
+            username: followed.username,
+          },
+
+        };
+      }
+      if (a.activityDetails.includes('created')) {
+        const userId = a.activityDetails.split(' ')[0];
+        const eventId = a.activityDetails.split(' ')[a.activityDetails.split(' ').length - 1];
+        const user = await Users.findById(userId).select('username').lean();
+        const event = await Events.findById(eventId).select('title').lean();
+        return {
+          activityDetails: `${user.username} created a new event called ${event.title}`,
+          activityType: 'Event Creation',
+          user: {
+            id: userId,
+            username: user.username,
+          },
+          event: {
+            id: eventId,
+            title: event.title,
+          },
+        };
+      }
+    });
+
+    const formattedActivity = await Promise.all(formattedArray);
+    res.status(200).json(formattedActivity);
   }),
 
   // * @desc Create a new Event
@@ -104,9 +164,9 @@ const controller = {
       {
         $push: {
           activity: {
-            activityDetails: `${host} created a new event called ${title}`,
-            ref1: host,
-            ref2: event._id,
+            activityDetails: `${host} created a new event called ${event._id}`,
+            user: [host],
+            reference: event._id,
           },
         },
       },
@@ -179,6 +239,14 @@ const controller = {
 
     user.activity.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     res.json(user);
+  }),
+
+  // * @desc Get all users
+  // * @route GET /api/users
+  // * @access PRIVATE
+  GetUsers: asyncHanlder(async (req, res) => {
+    const users = await Users.find().lean();
+    res.json(users);
   }),
 
   // * @desc Push a new attendance object to the event conatining the user id and their status (going or maybe)

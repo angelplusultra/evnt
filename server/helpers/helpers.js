@@ -16,7 +16,14 @@ const helpers = {
     return hash;
   }),
   // ! Refactor this to use yup for schema validation
-  signUpDataValidation: (username, email, password, password2, areaCode, res) => {
+  signUpDataValidation: (
+    username,
+    email,
+    password,
+    password2,
+    areaCode,
+    res,
+  ) => {
     if (!validator.isEmail(email)) {
       res.status(400);
       throw new Error('Please enter a valid email');
@@ -50,9 +57,7 @@ const helpers = {
   },
 
   // * Validate data from user input (for schema validation see server/middleware/validation/validators.js)
-  validateEventData: async (host, {
-    zipCode,
-  }, date, attendance, res) => {
+  validateEventData: async (host, { zipCode }, date, attendance, res) => {
     const { user, status } = attendance[0];
 
     const validStatus = ['going'];
@@ -61,7 +66,9 @@ const helpers = {
 
     if (!validStatus.includes(formattedStatus)) {
       res.status(400);
-      throw new Error('A new event must have at least one attendee with the status of "Going", please fill in all required fields');
+      throw new Error(
+        'A new event must have at least one attendee with the status of "Going", please fill in all required fields',
+      );
     }
 
     if (!validator.isDate(new Date(date))) {
@@ -85,7 +92,6 @@ const helpers = {
 
     return true;
   },
-
 };
 
 export default helpers;

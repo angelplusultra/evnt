@@ -13,10 +13,23 @@ const controller = {
   // * @access PUBLIC
   SignUp: asyncHandler(async (req, res) => {
     const {
-      email, username, password, password2, isArtist, areaCode, locationTracking,
+      email,
+      username,
+      password,
+      password2,
+      isArtist,
+      areaCode,
+      locationTracking,
     } = req.body;
 
-    helpers.signUpDataValidation(username, email, password, password2, areaCode, res);
+    helpers.signUpDataValidation(
+      username,
+      email,
+      password,
+      password2,
+      areaCode,
+      res,
+    );
 
     const takenEmail = await Users.findOne({ email }).lean();
 
@@ -86,13 +99,17 @@ const controller = {
         url: `http://localhost:5000/auth/verify/${verifyToken}`,
         user: username,
       },
-
     };
 
     await transporter.sendMail(msg);
     // ! Later on, make it so the user can resend the email if they didn't get it
 
-    res.status(201).json({ message: 'User created successfully, please verify your account', user: savedUser });
+    res
+      .status(201)
+      .json({
+        message: 'User created successfully, please verify your account',
+        user: savedUser,
+      });
   }),
 
   // * @desc Validate form, Authenticate user and send token
@@ -101,8 +118,9 @@ const controller = {
   Login: asyncHandler(async (req, res) => {
     const { emailOrUsername, password } = req.body;
 
-    const user = await Users
-      .findOne({ $or: [{ email: emailOrUsername }, { username: emailOrUsername }] }).lean();
+    const user = await Users.findOne({
+      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+    }).lean();
 
     if (!user) {
       res.status(400);
@@ -141,8 +159,11 @@ const controller = {
       throw new Error('User is already verified');
     }
 
-    const updatedUser = await Users
-      .findByIdAndUpdate(decoded.id, { isVerified: true }, { new: true });
+    const updatedUser = await Users.findByIdAndUpdate(
+      decoded.id,
+      { isVerified: true },
+      { new: true },
+    );
 
     if (!updatedUser) {
       res.status(400);
@@ -151,7 +172,9 @@ const controller = {
 
     updatedUser.password = undefined;
 
-    res.status(200).json({ message: 'User verified successfully', user: updatedUser });
+    res
+      .status(200)
+      .json({ message: 'User verified successfully', user: updatedUser });
   }),
 };
 

@@ -11,8 +11,14 @@ const controller = {
   // * @access PRIVATE
   GetAllEvents: asyncHanlder(async (req, res) => {
     const { locationTracking, following } = req.user;
-    const events = await Events.find().where('location.county').in(locationTracking).lean();
-    const followedEvents = await Events.find().where('host').in(following).lean();
+    const events = await Events.find()
+      .where('location.county')
+      .in(locationTracking)
+      .lean();
+    const followedEvents = await Events.find()
+      .where('host')
+      .in(following)
+      .lean();
     const allEvents = [...events, ...followedEvents];
 
     allEvents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -24,7 +30,10 @@ const controller = {
   // * @access PRIVATE
   GetFollowingEvents: asyncHanlder(async (req, res) => {
     const { following } = req.user;
-    const followedEvents = await Events.find().where('host').in(following).sort({ createdAt: 'desc' })
+    const followedEvents = await Events.find()
+      .where('host')
+      .in(following)
+      .sort({ createdAt: 'desc' })
       .lean();
 
     res.json(followedEvents);
@@ -42,12 +51,17 @@ const controller = {
   GetActivity: asyncHanlder(async (req, res) => {
     //! Experimental approach here, might need to be refactored
     const { following } = req.user;
-    const activity = await Users.find().where('_id').in(following).select('activity')
+    const activity = await Users.find()
+      .where('_id')
+      .in(following)
+      .select('activity')
       .lean();
 
     const allActivity = activity.map((a) => a.activity);
     const flattenedActivity = allActivity.flat();
-    flattenedActivity.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    flattenedActivity.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+    );
 
     res.json(flattenedActivity);
   }),
@@ -67,17 +81,37 @@ const controller = {
       res.status(400);
       throw new Error('You cannot create an event for another user');
     }
-    const locationData = await axios.get(`https://service.zipapi.us/zipcode/county/${location.zipCode}?X-API-KEY=${process.env.ZIP_API_KEY}`);
+    const locationData = await axios.get(
+      `https://service.zipapi.us/zipcode/county/${location.zipCode}?X-API-KEY=${process.env.ZIP_API_KEY}`,
+    );
 
     const { county: counties } = locationData.data.data;
 
     const event = new Events({
-      title, host, location, date, genre, lineup, attendance,
+      title,
+      host,
+      location,
+      date,
+      genre,
+      lineup,
+      attendance,
     });
     const [county] = counties;
     event.location.county = county;
     // event.location.county = "New York County"
-    await Users.findByIdAndUpdate(host, { $push: { activity: { activityDetails: `${host} created a new event called ${title}`, ref1: host, ref2: event._id } } }, { new: true });
+    await Users.findByIdAndUpdate(
+      host,
+      {
+        $push: {
+          activity: {
+            activityDetails: `${host} created a new event called ${title}`,
+            ref1: host,
+            ref2: event._id,
+          },
+        },
+      },
+      { new: true },
+    );
 
     await event.save();
 
@@ -114,10 +148,14 @@ const controller = {
       throw new Error('User does not exist');
     }
     if (user.following.includes(userId)) {
-      const filtered = user.following.filter((id) => id.toHexString() !== userId);
+      const filtered = user.following.filter(
+        (id) => id.toHexString() !== userId,
+      );
       user.following = filtered;
       await user.save();
-      return res.status(200).send({ message: `${userExist.username} unfollowed` });
+      return res
+        .status(200)
+        .send({ message: `${userExist.username} unfollowed` });
     }
     user.following.push(userId);
     // ! This is experimental, attempting to populate an array of strings containing the users
@@ -180,27 +218,66 @@ const controller = {
     // @Step: 2 - Check if the user has already marked their attendance status
     const { attendance } = event;
 
-    const attendanceStatusExists = attendance
-      .find((user) => user.user._id.toString() === _id.toString());
+    const attendanceStatusExists = attendance.find(
+      (user) => user.user._id.toString() === _id.toString(),
+    );
 
     // @Step: 3 - If the user has already marked their attendance status, update it
     if (attendanceStatusExists) {
       if (attendanceStatusExists.status === status) {
         res.status(400);
-        throw new Error(`You have already marked your attendance status as ${status}`);
+        throw new Error(
+          `You have already marked your attendance status as ${status}`,
+        );
       }
 
       attendanceStatusExists.status = status;
       await event.save();
-      await Users.findByIdAndUpdate(_id, { $push: { activity: { activityDetails: `${req.user._id} updated their attendance status to ${status} for ${event._id}`, ref1: _id, ref2: event._id } } }, { new: true });
-      return res.status(200).send({ message: `You have updated your attendance status for ${event.title} to ${status}`, attendance, event });
+      await Users.findByIdAndUpdate(
+        _id,
+        {
+          $push: {
+            activity: {
+              activityDetails: `${req.user._id} updated their attendance status to ${status} for ${event._id}`,
+              ref1: _id,
+              ref2: event._id,
+            },
+          },
+        },
+        { new: true },
+      );
+      return res
+        .status(200)
+        .send({
+          message: `You have updated your attendance status for ${event.title} to ${status}`,
+          attendance,
+          event,
+        });
     }
 
     // @Step: 4 - If the user has not already marked their attendance status, push a new object to the attendance array
     attendance.push({ user: _id, status });
     await event.save();
-    await Users.findByIdAndUpdate(_id, { $push: { activity: { activityDetails: `${req.user._id} marked their attendance status as ${status} for ${event._id}`, ref1: _id, ref2: event._id } } }, { new: true });
-    return res.status(200).send({ message: `You have marked your attendance status for ${event.title} as ${status}`, attendance, event });
+    await Users.findByIdAndUpdate(
+      _id,
+      {
+        $push: {
+          activity: {
+            activityDetails: `${req.user._id} marked their attendance status as ${status} for ${event._id}`,
+            ref1: _id,
+            ref2: event._id,
+          },
+        },
+      },
+      { new: true },
+    );
+    return res
+      .status(200)
+      .send({
+        message: `You have marked your attendance status for ${event.title} as ${status}`,
+        attendance,
+        event,
+      });
   }),
 
   // * @desc Delete a user from the attendance array of an event
@@ -226,22 +303,29 @@ const controller = {
     // @Step: 2 - Check if the user has already marked their attendance status
     const { attendance } = event;
 
-    const attendanceStatusExists = attendance
-      .find((attendant) => attendant.user.toString() === _id.toString());
+    const attendanceStatusExists = attendance.find(
+      (attendant) => attendant.user.toString() === _id.toString(),
+    );
 
     if (!attendanceStatusExists) {
       res.status(400);
       throw new Error('You have no attendance status with this event');
       // @Step: 3 - If the user has already marked their attendance status, delete it
     } else {
-      const filteredAttendance = attendance.filter((attendant) => attendant.user.toString() !== _id.toString());
+      const filteredAttendance = attendance.filter(
+        (attendant) => attendant.user.toString() !== _id.toString(),
+      );
 
       event.attendance = filteredAttendance;
       const updatedEvent = await event.save();
-      res.status(200).send({ message: 'You have deleted your attendance status', updatedEvent });
+      res
+        .status(200)
+        .send({
+          message: 'You have deleted your attendance status',
+          updatedEvent,
+        });
     }
   }),
-
 };
 
 export default controller;

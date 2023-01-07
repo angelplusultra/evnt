@@ -8,7 +8,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import connectDb from './db/db.js';
 import router from './routes/index.js';
-import handleError from './middleware/handleError.js';
+import handleError from './middleware/error/handleError.js';
 
 // eslint-disable-next-line import/prefer-default-export
 export const dirname = url.fileURLToPath(new URL('.', import.meta.url));

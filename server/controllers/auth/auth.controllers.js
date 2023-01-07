@@ -7,6 +7,7 @@ import path from 'path';
 import helpers from '../../helpers/helpers.js';
 import Users from '../../models/Users.js';
 
+
 const controller = {
   // * @desc Create a new User
   // * @route POST /auth/signup
@@ -16,7 +17,7 @@ const controller = {
       email, username, password, password2, isArtist, areaCode, locationTracking,
     } = req.body;
 
-    helpers.signUpValidation(username, email, password, password2, areaCode, res);
+    helpers.signUpDataValidation(username, email, password, password2, areaCode, res);
 
     const takenEmail = await Users.findOne({ email }).lean();
 
@@ -100,8 +101,6 @@ const controller = {
   // * @access PUBLIC
   Login: asyncHandler(async (req, res) => {
     const { emailOrUsername, password } = req.body;
-
-    helpers.loginValidation(emailOrUsername, password, res);
 
     const user = await Users
       .findOne({ $or: [{ email: emailOrUsername }, { username: emailOrUsername }] }).lean();

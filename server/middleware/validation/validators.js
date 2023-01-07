@@ -1,5 +1,4 @@
 import * as yup from 'yup';
-import assyncHandler from 'express-async-handler';
 
 // * Schema validators
 const validators = {

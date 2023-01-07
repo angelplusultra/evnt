@@ -7,7 +7,6 @@ import path from 'path';
 import helpers from '../../helpers/helpers.js';
 import Users from '../../models/Users.js';
 
-
 const controller = {
   // * @desc Create a new User
   // * @route POST /auth/signup

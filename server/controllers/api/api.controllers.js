@@ -44,9 +44,8 @@ const controller = {
     const { following } = req.user;
     const activity = await Users.find().where('_id').in(following).select('activity')
       .lean();
-    console.log(activity);
+
     const allActivity = activity.map((a) => a.activity);
-    console.log(allActivity);
     const flattenedActivity = allActivity.flat();
     flattenedActivity.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -186,7 +185,6 @@ const controller = {
 
     // @Step: 3 - If the user has already marked their attendance status, update it
     if (attendanceStatusExists) {
-      console.log(attendanceStatusExists);
       if (attendanceStatusExists.status === status) {
         res.status(400);
         throw new Error(`You have already marked your attendance status as ${status}`);

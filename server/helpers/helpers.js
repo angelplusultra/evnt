@@ -15,7 +15,7 @@ const helpers = {
     }
     return hash;
   }),
-// ! Refactor this to use yup for schema validation
+  // ! Refactor this to use yup for schema validation
   signUpDataValidation: (username, email, password, password2, areaCode, res) => {
     if (!validator.isEmail(email)) {
       res.status(400);

@@ -12,4 +12,31 @@ server dependecies:
 __dirname
 import * as url from 'url';
 const __filename = url.fileURLToPath(import.meta.url);
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));\
+
+
+To-do
+
+Create get sinmgle event controller
+
+create get single user controller 
+
+make sure users cannot follow themselves ✅
+
+Create Controller for a user to mark attendance status for an event, either Going or Maybe
+Create Controller to delete a users attendance status from an event
+Create a controller to update event activityDetails
+Create a controller to delete an event
+
+
+
+
+Complete:
+
+Get All Events Based on Areas a User Follows
+Get All Events Created by Users a user Follows
+Get Activity of all following and sorted by most recent
+Users can follow other users
+
+
+

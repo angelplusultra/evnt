@@ -3,9 +3,8 @@ import { Router } from 'express';
 import apiController from '../../../controllers/api/api.controllers.js';
 
 const router = Router();
-
-router.route('/:id')
-  .put(apiController.FollowUser);
+router.route('/').get(apiController.GetUsers);
+router.route('/:id').put(apiController.FollowUser);
 
 router.get('/activity', apiController.GetActivity);
 router.get('/me', apiController.GetMe);

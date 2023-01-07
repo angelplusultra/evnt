@@ -29,110 +29,38 @@
       <input type="submit" value="Submit" />
     </form>
 
-    <div>
-      <div class="errors"></div>
-      <h1>Drone Name</h1>
-      <p class="name"></p>
-      <h2>Release Year</h2>
-      <p class="year"></p>
-      <h3 class="mantitle">Manufacturer</h3>
-      <p class="man"></p>
-    </div>
-  </body>
+   <ul>
+    <li>{activityDetails}</li>
+
+   </ul>
   <script>
-const addCounty = document.querySelector('.addCounty');
-    addCounty.addEventListener('click', addCountyInput)
-    function addCountyInput(e){
-        e.preventDefault();
+fetch('http://localhost:5000/api/users/activity', {
+  
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjk0ZGVhODY3NDliNmI1MGM4NzI4NiIsImlhdCI6MTY3MzA4ODcxMSwiZXhwIjoxNjc1NjgwNzExfQ.ZPe1lyNLk40LtiM4uZKOYv5Hle8okZZXz1_W4zVArG4'
+  },
 
-        const form = document.querySelector('form');
-        const select = document.querySelector('select');
-        const input = document.createElement('select');
-        input.setAttribute('name', 'areaCode')
-        input.setAttribute('id', 'areaCode')
-        input.innerHTML =  `<option value="Orange">Orange County</option>
-        <option value="Los Angeles">Los Angeles County</option>
-        <option value="San Diego">San Diego County</option>`
-        form.insertBefore(input, select)
+}).then(res => res.json())
+.then(activityArray => {
+  console.log(activityArray)
+  activityArray.forEach(a => {
 
-
+    if(a.activityType === 'Event Creation'){
+      const markup = `<a href="/api/users/${a.user._id}">${a.user.username}</a> created an event called <a href="/api/events/${a.event._id}">${a.event.title}</a>`
+      const li = document.createElement('li')
+      li.innerHTML = markup
+      document.querySelector('ul').appendChild(li)
     }
-    const isArtist = document.querySelector('.isArtist');
-    isArtist.addEventListener('change', (e) => {
-
-        if (e.target.checked){
-            isArtist.value = true
-
-        } else {
-            isArtist.value = false
-        }
-        console.log(isArtist.value)
-    })
-        // const form = document.querySelector('form');
-        // form.addEventListener('submit', (e) => {
-        //     e.preventDefault();
-        //     const formData = new FormData(form);
-        //     const data = Object.fromEntries(formData);
+    if(a.activityType === 'Follow'){
+      const markup = `<a href="/api/users/${a.user._id}">${a.user.username}</a> followed <a href="/api/users/${a.followed._id}">${a.followed.username}</a>`
+      const li = document.createElement('li')
+      li.innerHTML = markup
+      document.querySelector('ul').appendChild(li)
+    }
+  })
+})
 
 
-        //     fetch(`http://localhost:5000/auth/signup`, 
-        //     {
-        //         method: 'post', body: JSON.stringify(data), headers: {'Content-Type': 'application/json', credentials: 'include'}
-        //     })
-        //     .then(res => res.json())
-        //     .then(data => {
-        //         console.log(data)
-
-        //     })
-        // })
-
-
-    //   const data = localStorage.getItem('data')
-    //   console.log(data)
-    //     if(data){
-    //         const formatted = JSON.parse(data)
-
-    //         document.querySelector('.name').textContent = formatted.name;
-    //         document.querySelector('.year').textContent = formatted.year;
-    //         document.querySelector('.man').textContent = formatted .manufacturer
-
-    //     }
-
-    //     const form = document.querySelector('form');
-    //     form.addEventListener('submit', (e) => {
-    //         e.preventDefault();
-    //         const formData = new FormData(form);
-    //         const data = Object.fromEntries(formData);
-
-
-    //         fetch(`http://localhost:5000/drones?name=${data.name}&year=${data.year}&manufacturer=${data.manufacturer}`)
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             document.querySelector('.name').textContent = data.name;
-    //             document.querySelector('.year').textContent = data.year;
-    //             document.querySelector('.man').textContent = data.manufacturer;
-
-    //             if(!data.manufacturer){
-    //                 document.querySelector('.man').classList.add('hidden')
-    //             }
-
-    //             if(!data.name){
-    //                 document.querySelector('.name').classList.add('hidden')
-    //             }
-
-    //             if(!data.year){
-    //                 document.querySelector('.year').classList.add('hidden')
-    //             }
-    //             if(!data.name && !data.year && !data.manufacturer){
-
-    //                 document.querySelector('.errors').textContent = 'No results found'
-
-    //             }
-    //             if(data){
-    //                 localStorage.setItem('data', JSON.stringify(data))
-    //             }
-
-    //         })
-        // })
   </script>
 </html>

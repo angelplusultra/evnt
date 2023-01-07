@@ -42,3 +42,46 @@ Users can follow other users
 
 
 
+
+
+
+SIMULATION OF HOW TO REPLACE FOLLOWING ACTIVITY USER/EVENT ID REFS WITH DISPLAY NAMES
+
+const data = "63b7cec80129e3cfab4f4ed5 created a new event called 63b93ef0083cb56fe6d96194"
+
+const user = '63b7cec80129e3cfab4f4ed5'
+const userReplacement = "david"
+const event = '63b93ef0083cb56fe6d96194'
+const eventReplacement = "david's event"
+
+const formatted = data.replace(user, userReplacement).replace(event, eventReplacement)
+
+
+
+VANILLA JS WAY TO CREATE DYNAMIC MARKUP BASED ON ACTIVITY ARRAY
+fetch('http://localhost:5000/api/users/activity', {
+  
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjk0ZGVhODY3NDliNmI1MGM4NzI4NiIsImlhdCI6MTY3MzA4ODcxMSwiZXhwIjoxNjc1NjgwNzExfQ.ZPe1lyNLk40LtiM4uZKOYv5Hle8okZZXz1_W4zVArG4'
+  },
+
+}).then(res => res.json())
+.then(activityArray => {
+  console.log(activityArray)
+  activityArray.forEach(a => {
+
+    if(a.activityType === 'Event Creation'){
+      const markup = `<a href="/api/users/${a.user._id}">${a.user.username}</a> created an event called <a href="/api/events/${a.event._id}">${a.event.title}</a>`
+      const li = document.createElement('li')
+      li.innerHTML = markup
+      document.querySelector('ul').appendChild(li)
+    }
+    if(a.activityType === 'Follow'){
+      const markup = `<a href="/api/users/${a.user._id}">${a.user.username}</a> followed <a href="/api/users/${a.followed._id}">${a.followed.username}</a>`
+      const li = document.createElement('li')
+      li.innerHTML = markup
+      document.querySelector('ul').appendChild(li)
+    }
+  })
+})

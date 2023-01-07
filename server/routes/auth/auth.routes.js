@@ -7,7 +7,7 @@ const router = Router();
 
 router.post('/signup', validators.signUpSchema, authController.SignUp);
 
-router.post('/login', validators.signUpSchema, authController.Login);
+router.post('/login', validators.loginSchema, authController.Login);
 router.get('/verify/:token', authController.VerifyAccount);
 
 export default router;

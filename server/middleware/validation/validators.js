@@ -44,7 +44,9 @@ const validators = {
           yup.object().shape({
             user: yup
               .string()
-              .required('An event must have at least one attendee, user is required')
+              .required(
+                'An event must have at least one attendee, user is required',
+              )
               .typeError('user must be a string'),
             status: yup
               .string()
@@ -78,7 +80,23 @@ const validators = {
         .string()
         .required('password is required')
         .typeError('password must be a string'),
-      password2: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
+      password2: yup
+        .string()
+        .oneOf([yup.ref('password'), null], 'Passwords must match'),
+      isArtist: yup.boolean().required('isArtist is required').typeError('isArtist must be a boolean'),
+      areaCode: yup.string().required('areaCode is required').typeError('areaCode must be a string'),
+
+      // validation for locationTracking is not working, it validates that it's an array but not that it's an array of strings
+
+      // create validation for locationTracking an array of strings that is required
+// ? WHY IS THIS NOT WORKING?
+      locationTracking: yup
+        .array()
+        .of(yup.string())
+        .required('locationTracking is required')
+        .typeError('locationTracking must be an array')
+        .min(1, 'locationTracking must have at least one location'),
+        
     });
 
     try {

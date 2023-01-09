@@ -32,7 +32,7 @@ const controller = {
     );
 
     const takenEmail = await Users.findOne({ email });
-
+  
     if (takenEmail) {
       res.status(400);
       throw new Error('User already exists with that email');

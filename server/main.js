@@ -28,11 +28,6 @@ connectDb();
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-    console.log(typeof req.body.locationTracking[0])
-    next();
-})
-
 app.use(router);
 
 app.use(handleError);

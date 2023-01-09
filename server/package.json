@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
     "dev": "nodemon main",
-    "test": "jest"
+    "test": "jest --watchAll --verbose"
   },
   "author": "Mac Fitton",
   "license": "ISC",
@@ -35,6 +35,7 @@
   "type": "module",
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",
+    "@types/jest": "^29.2.5",
     "babel-jest": "^29.3.1",
     "eslint": "^8.31.0",
     "eslint-config-airbnb-base": "^15.0.0",

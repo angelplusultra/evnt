@@ -32,7 +32,7 @@ const controller = {
     );
 
     const takenEmail = await Users.findOne({ email });
-  
+
     if (takenEmail) {
       res.status(400);
       throw new Error('User already exists with that email');
@@ -104,12 +104,10 @@ const controller = {
     await transporter.sendMail(msg);
     // ! Later on, make it so the user can resend the email if they didn't get it
 
-    res
-      .status(201)
-      .json({
-        message: 'User created successfully, please verify your account',
-        user: savedUser,
-      });
+    res.status(201).json({
+      message: 'User created successfully, please verify your account',
+      user: savedUser,
+    });
   }),
 
   // * @desc Validate form, Authenticate user and send token
@@ -120,7 +118,7 @@ const controller = {
 
     const user = await Users.findOne({
       $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
-    }).lean();
+    });
 
     if (!user) {
       res.status(400);

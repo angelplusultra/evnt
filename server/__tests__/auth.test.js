@@ -2,48 +2,87 @@ import authController from '../controllers/auth/auth.controllers.js';
 import Users from '../models/Users.js';
 /* eslint-disable */
 
-jest.mock('../../../models/Users.js');
+jest.mock('../models/Users.js');
 
 
-it('should create a new user', async () => {
-    const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn().mockReturnThis(),
-    };
+const res = {
+    status: jest.fn(x => x),
+    json: jest.fn(x => x),
+};
+const next = jest.fn(x => x);
+
+describe('SignUp', () => {
+    it('should set a status code of 400 and throw an error over an already existing email', async () => {
+        const req = {
+            body: {
+            email: 'test@test.com',
+            username: 'test',
+            password: 'test',
+            password2: 'test',
+            isArtist: false,
+            areaCode: '12345',
+            locationTracking: ["Orange", "Los Angeles"],
+            },
+        }
+        
+    Users.findOne.mockImplementationOnce(() => ({
+        email: req.body.email,
+    }));
     
-    const mockUser = {
-        username: 'username',
-        email: 'test@test.com',
-        password: '123456',
-        password2: '123456',
-        isArtist: false,
-        areaCode: '92808',
-        locationTracking: ["New York", "Orange"],
-        activity: [{ activityDetails: 'Signed up' }]
-
-    }
+    await authController.SignUp(req, res, next);
     
-    const req = {
-        body: mockUser
-    };
-
-    await Users.create.mockResolvedValue({
-        username: 'username',
-        email: 'test@test.com',
-        password: '123456',
-        isArtist: false,   
-        areaCode: '92808',
-        locationTracking: ["New York", "Orange"],
-        activity: [{ activityDetails: 'Signed up' }]           
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(next).toHaveBeenCalledWith(new Error('User already exists with that email'));
+    
     });
-
-    await authController.SignUp(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith({
-        success: true,
-        data: mockUser
-
+    it('should set a status code of 400 and throw an error over an already existing username', async () => {
+        const req = {
+            body: {
+            email: 'test10@test.com',
+            username: 'macfittondev',
+            password: 'test',
+            password2: 'test',
+            isArtist: false,
+            areaCode: '12345',
+            locationTracking: ["Orange", "Los Angeles"],
+            },
+        }
+        
+    Users.findOne.mockImplementationOnce(() => ({
+        username: req.body.username,
+    }));
+    
+    await authController.SignUp(req, res, next);
+    
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(next).toHaveBeenCalledWith(new Error('User already exists with that email'));
+    
     });
 
 });
+
+describe('Login', () => {
+    it('should set a status code of 400 and throw an error over an incorrect password', async () => {
+        const req = {
+            body: {
+            emailOrUsername: 'macfittondev',
+            password: 'test',
+            },
+        }
+
+        Users.findOne.mockImplementationOnce(() => ({
+            emailOrUsername: req.body.emailOrUsername,
+            password: 'test2',
+        }))
+
+        await authController.Login(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(next).toHaveBeenCalledWith(new Error('Invalid credentials'));
+
+    })
+
+})
+
+
+

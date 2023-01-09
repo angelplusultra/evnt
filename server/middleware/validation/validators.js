@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-
+//! NEEDS TESTING
 // * Schema validators
 const validators = {
   validateEventSchema: async (req, res, next) => {
@@ -46,7 +46,7 @@ const validators = {
               .string()
               .required(
                 'An event must have at least one attendee, user is required',
-              )
+              ).strict(true)
               .typeError('user must be a string'),
             status: yup
               .string()
@@ -62,14 +62,16 @@ const validators = {
       await eventSchema.validate(req.body);
       next();
     } catch (error) {
+      res.status(400);
       next(error);
     }
   },
+  // !!! yup attempts to coerce the value to the type specified in the schema, turn that off by using strict(true) on a specific field or globally on the validation options
   signUpSchema: async (req, res, next) => {
     const signUpSchema = yup.object().shape({
       username: yup
         .string()
-        .required('name is required')
+        .required('username is required')
         .typeError('name must be a string'),
       email: yup
         .string()
@@ -86,23 +88,22 @@ const validators = {
       isArtist: yup.boolean().required('isArtist is required').typeError('isArtist must be a boolean'),
       areaCode: yup.string().required('areaCode is required').typeError('areaCode must be a string'),
 
-      // validation for locationTracking is not working, it validates that it's an array but not that it's an array of strings
-
-      // create validation for locationTracking an array of strings that is required
-// ? WHY IS THIS NOT WORKING?
+      // ! WHY IS THIS NOT WORKING, VALIDATION OF DATA INSIDE ARRAY ISNT WORKING?
       locationTracking: yup
         .array()
-        .of(yup.string())
+        .of(yup.string().required('locationTracking is required').typeError('locationTracking must be a string'))
         .required('locationTracking is required')
         .typeError('locationTracking must be an array')
-        .min(1, 'locationTracking must have at least one location'),
-        
+        .min(1, 'locationTracking must have at least one location')
+        .strict(true),
+
     });
 
     try {
-      await signUpSchema.validate(req.body);
-      next();
+      const valid = await signUpSchema.validate(req.body);
+      if (valid) return next();
     } catch (error) {
+      res.status(400);
       next(error);
     }
   },
@@ -122,6 +123,7 @@ const validators = {
       await loginSchema.validate(req.body);
       next();
     } catch (error) {
+      res.status(400);
       next(error);
     }
   },

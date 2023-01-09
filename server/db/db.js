@@ -5,6 +5,7 @@ const connectDb = async () => {
     mongoose.set('strictQuery', false);
     const conn = await mongoose.connect(process.env.MONGO_URI, { dbName: 'Evnt' });
     if (conn) {
+      // eslint-disable-next-line no-console
       console.log(`MongoDB Connected: ${conn.connection.host}`);
     }
   } catch (error) {

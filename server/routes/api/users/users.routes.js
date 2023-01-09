@@ -3,10 +3,16 @@ import { Router } from 'express';
 import apiController from '../../../controllers/api/api.controllers.js';
 
 const router = Router();
-router.route('/').get(apiController.GetUsers);
-router.route('/:id').put(apiController.FollowUser);
+
+router.route('/').get(apiController.GetAllUsers);
+
+router.get('/me', apiController.GetMe);
 
 router.get('/activity', apiController.GetActivity);
-router.get('/me', apiController.GetMe);
+
+router
+  .route('/:id')
+  .put(apiController.FollowUser)
+  .get(apiController.GetSingleUser);
 
 export default router;

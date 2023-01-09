@@ -15,13 +15,15 @@ const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));\
 
 
+Controller
+
 To-do
 
-Protecxxt the ability of a user making an event for someone else aka the host
+Protecxxt the ability of a user making an event for someone else aka the host ✅
 
-Create get sinmgle event controller
+Create get sinmgle event controller ✅
 
-create get single user controller 
+create get single user controller ✅
 
 make sure users cannot follow themselves ✅
 

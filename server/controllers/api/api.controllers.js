@@ -5,6 +5,7 @@ import helpers from '../../helpers/helpers.js';
 import Events from '../../models/Events.js';
 import Users from '../../models/Users.js';
 
+
 const controller = {
   // * @desc Get all Events based on users location tracking & followed
   // * @route GET /api/events
@@ -25,6 +26,23 @@ const controller = {
 
     res.json(allEvents);
   }),
+  // * @desc Get Single Event
+  // * @route GET /api/events/:id
+  // * @access PRIVATE
+
+  GetSingleEvent: asyncHanlder(async (req, res) => {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400);
+      throw new Error('Invalid event ID');
+    }
+    const event = await Events.findById(id);
+    if (!event) {
+      res.status(404);
+      throw new Error('Event does not exist');
+    }
+    res.status(200).json(event);
+  }),
   // * @desc Get all Events based on users they are following
   // * @route GET /api/events/following
   // * @access PRIVATE
@@ -38,13 +56,6 @@ const controller = {
 
     res.json(followedEvents);
   }),
-  // * @desc Get Single Event
-  // * @route GET /api/events/:id
-  // * @access PRIVATE
-  GetEvent: asyncHanlder(async (req, res) => {
-    res.send('Get Single Event');
-  }),
-
   // * @desc Get the activity of users the user is following
   // * @route GET /api/activity
   // * @access PRIVATE
@@ -72,7 +83,9 @@ const controller = {
         const followedId = a.activityDetails.split(' ')[2];
 
         const user = await Users.findById(userId).select('username').lean();
-        const followed = await Users.findById(followedId).select('username').lean();
+        const followed = await Users.findById(followedId)
+          .select('username')
+          .lean();
 
         if (!user) {
           return {
@@ -99,7 +112,6 @@ const controller = {
             id: followedId,
             username: followed.username,
           },
-
         };
       }
       if (a.activityDetails.includes('created')) {
@@ -233,20 +245,36 @@ const controller = {
   }),
   GetMe: asyncHanlder(async (req, res) => {
     const { _id } = req.user;
-    const user = await Users.findById(_id).lean();
+    const user = await Users.findById(_id).select('-password').lean();
 
     // sort following by most recent createdAt
 
     user.activity.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
     res.json(user);
   }),
 
   // * @desc Get all users
   // * @route GET /api/users
   // * @access PRIVATE
-  GetUsers: asyncHanlder(async (req, res) => {
+  GetAllUsers: asyncHanlder(async (req, res) => {
     const users = await Users.find().lean();
     res.json(users);
+  }),
+
+  GetSingleUser: asyncHanlder(async (req, res) => {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400);
+      throw new Error('Invalid user ID');
+    }
+    const user = await Users.findById(id).lean();
+    if (!user) {
+      res.status(404);
+      throw new Error('User does not exist');
+    }
+    delete user.password;
+    res.status(200).json(user);
   }),
 
   // * @desc Push a new attendance object to the event conatining the user id and their status (going or maybe)
@@ -314,13 +342,11 @@ const controller = {
         },
         { new: true },
       );
-      return res
-        .status(200)
-        .send({
-          message: `You have updated your attendance status for ${event.title} to ${status}`,
-          attendance,
-          event,
-        });
+      return res.status(200).send({
+        message: `You have updated your attendance status for ${event.title} to ${status}`,
+        attendance,
+        event,
+      });
     }
 
     // @Step: 4 - If the user has not already marked their attendance status, push a new object to the attendance array
@@ -339,13 +365,11 @@ const controller = {
       },
       { new: true },
     );
-    return res
-      .status(200)
-      .send({
-        message: `You have marked your attendance status for ${event.title} as ${status}`,
-        attendance,
-        event,
-      });
+    return res.status(200).send({
+      message: `You have marked your attendance status for ${event.title} as ${status}`,
+      attendance,
+      event,
+    });
   }),
 
   // * @desc Delete a user from the attendance array of an event
@@ -386,12 +410,10 @@ const controller = {
 
       event.attendance = filteredAttendance;
       const updatedEvent = await event.save();
-      res
-        .status(200)
-        .send({
-          message: 'You have deleted your attendance status',
-          updatedEvent,
-        });
+      res.status(200).send({
+        message: 'You have deleted your attendance status',
+        updatedEvent,
+      });
     }
   }),
 };

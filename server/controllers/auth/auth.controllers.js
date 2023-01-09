@@ -31,14 +31,14 @@ const controller = {
       res,
     );
 
-    const takenEmail = await Users.findOne({ email }).lean();
+    const takenEmail = await Users.findOne({ email });
 
     if (takenEmail) {
       res.status(400);
       throw new Error('User already exists with that email');
     }
 
-    const takenUsername = await Users.findOne({ username }).lean();
+    const takenUsername = await Users.findOne({ username });
 
     if (takenUsername) {
       res.status(400);
@@ -62,7 +62,7 @@ const controller = {
 
     if (!savedUser) {
       res.status(400);
-      throw new Error('Invalid user data');
+      throw new Error('User could not be created');
     }
 
     savedUser.password = undefined;

@@ -11,7 +11,7 @@ router
 
 router.route('/following').get(apiController.GetFollowingEvents);
 
-router.route('/:id').get(apiController.GetEvent);
+router.route('/:id').get(apiController.GetSingleEvent);
 
 router
   .route('/:id/attend')

@@ -1,20 +1,12 @@
 # evnt
  a social network for independent event hosting/sharing
 
+<h3>Controller Overview</h3>
 
- 1. Create new MongoDB Project and Cluster
- 2. Whitelist IP adderess\
-   
-
-   Server Dependecnies:
 <ul>
-<li>
-express
-</li>
-<li>
-dotenv
-</li>
-<li>
-dotenv
-</li>
+    <li>
+    <h5>Create New Event</h5>
+    <label>Route</label>
+    <p>/api/events</p>
+    </li>
 </ul>

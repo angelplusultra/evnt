@@ -62,7 +62,7 @@ const controller = {
     } = req.body;
 
     // @desc Data Validation
-    helpers.validateEventData(host, location, date, attendance, res);
+    // helpers.validateEventData(host, location, date, attendance, res);
 
     if (host !== req.user._id.toString()) {
       res.status(400);

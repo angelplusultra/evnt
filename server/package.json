@@ -11,7 +11,7 @@
   "scripts": {
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
-    "dev": "cross-env NODE_ENV=dev nodemon main",
+    "dev": "  cross-env NODE_ENV=dev nodemon main",
     "test": "jest",
     "testWatch": "jest --watchAll --verbose",
     "start": "cross-env NODE_ENV=prod node main"

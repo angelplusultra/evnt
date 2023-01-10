@@ -91,7 +91,7 @@ const validators = {
       // ! WHY IS THIS NOT WORKING, VALIDATION OF DATA INSIDE ARRAY ISNT WORKING?
       locationTracking: yup
         .array()
-        .of(yup.string().required('locationTracking is required').typeError('locationTracking must be a string'))
+        .of(yup.string().required('locationTracking is required').typeError('locationTrackings must be a string'))
         .required('locationTracking is required')
         .typeError('locationTracking must be an array')
         .min(1, 'locationTracking must have at least one location')

@@ -40,6 +40,19 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    createdEvents: {
+      type: [mongoose.Schema.Types.ObjectId],
+      default: [],
+      ref: 'Event',
+    },
+    attendingEvents: {
+      type: [{
+        event: mongoose.Schema.Types.ObjectId,
+        status: String,
+      }],
+      default: [],
+      ref: 'Event',
+    },
     activity: {
       type: [
         new mongoose.Schema(

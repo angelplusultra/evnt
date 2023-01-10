@@ -27,10 +27,19 @@ create get single user controller ✅
 
 make sure users cannot follow themselves ✅
 
-Create Controller for a user to mark attendance status for an event, either Going or Maybe
-Create Controller to delete a users attendance status from an event
-Create a controller to update event activityDetails
-Create a controller to delete an event
+!!!! Contreoller gettinmg out of hand, taker time asap to abstract responsibiltiies into seperate controllers !!!
+
+Create Controller for a user to mark attendance status for an event, either Going or Maybe ✅
+Create Controller to delete a users attendance status from an event✅
+Create a controller to update event activityDetails ✅
+Create a controller to delete an event 
+
+NOTES ON EVENT DELETION:
+1. Validate 
+2. Prevent the ability for users to delete events they did not create
+3. When a deletion is succesful, make sure you delete the event in every users attendance array.
+This might bring the need for notifications to inform users about the event deletion/cancellation
+4. Event models should have a status property: "Active", "Passed" "Cancelled", deleting an event will set the status to "Cancelled" which will obscure it from the public. 
 
 
 

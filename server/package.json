@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
     "dev": "nodemon main",
-    "test": "jest --watchAll --verbose"
+    "test": "jest",
+    "testWatch": "jest --watchAll --verbose"
   },
   "author": "Mac Fitton",
   "license": "ISC",

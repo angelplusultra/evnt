@@ -1,16 +1,15 @@
 import axios from 'axios';
-import asyncHanlder from 'express-async-handler';
+import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
 import helpers from '../../helpers/helpers.js';
 import Events from '../../models/Events.js';
 import Users from '../../models/Users.js';
 
-
 const controller = {
   // * @desc Get all Events based on users location tracking & followed
   // * @route GET /api/events
   // * @access PRIVATE
-  GetAllEvents: asyncHanlder(async (req, res) => {
+  GetAllEvents: asyncHandler(async (req, res) => {
     const { locationTracking, following } = req.user;
     const events = await Events.find()
       .where('location.county')
@@ -30,7 +29,7 @@ const controller = {
   // * @route GET /api/events/:id
   // * @access PRIVATE
 
-  GetSingleEvent: asyncHanlder(async (req, res) => {
+  GetSingleEvent: asyncHandler(async (req, res) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400);
@@ -46,7 +45,7 @@ const controller = {
   // * @desc Get all Events based on users they are following
   // * @route GET /api/events/following
   // * @access PRIVATE
-  GetFollowingEvents: asyncHanlder(async (req, res) => {
+  GetFollowingEvents: asyncHandler(async (req, res) => {
     const { following } = req.user;
     const followedEvents = await Events.find()
       .where('host')
@@ -59,8 +58,9 @@ const controller = {
   // * @desc Get the activity of users the user is following
   // * @route GET /api/activity
   // * @access PRIVATE
-  GetActivity: asyncHanlder(async (req, res) => {
+  GetActivity: asyncHandler(async (req, res) => {
     //! Experimental approach here, might need to be refactored
+
     const { following } = req.user;
     const activity = await Users.find()
       .where('_id')
@@ -138,10 +138,17 @@ const controller = {
     res.status(200).json(formattedActivity);
   }),
 
+  GetFollowers: asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+
+    const followers = await Users.find({ following: _id }).lean().select('username _id');
+    res.status(200).json(followers);
+  }),
+
   // * @desc Create a new Event
   // * @route POST /api/events
   // * @access PRIVATE
-  CreateEvent: asyncHanlder(async (req, res) => {
+  CreateEvent: asyncHandler(async (req, res) => {
     const {
       title, host, location, date, genre, lineup, attendance,
     } = req.body;
@@ -180,6 +187,12 @@ const controller = {
             user: [host],
             reference: event._id,
           },
+          createdEvents: event._id,
+
+          attendingEvents: {
+            event: event._id,
+            status: 'going',
+          },
         },
       },
       { new: true },
@@ -194,7 +207,7 @@ const controller = {
   // * @route PUT /api/users/:id
   // * @access PRIVATE
 
-  FollowUser: asyncHanlder(async (req, res) => {
+  FollowUser: asyncHandler(async (req, res) => {
     const { _id } = req.user;
     const { id: userId } = req.params;
     if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -243,7 +256,7 @@ const controller = {
     // const user = await Users
     //   .findByIdAndUpdate(_id, { $push: { followed: userId } }, { new: true }).lean();
   }),
-  GetMe: asyncHanlder(async (req, res) => {
+  GetMe: asyncHandler(async (req, res) => {
     const { _id } = req.user;
     const user = await Users.findById(_id).select('-password').lean();
 
@@ -257,12 +270,12 @@ const controller = {
   // * @desc Get all users
   // * @route GET /api/users
   // * @access PRIVATE
-  GetAllUsers: asyncHanlder(async (req, res) => {
+  GetAllUsers: asyncHandler(async (req, res) => {
     const users = await Users.find().lean();
     res.json(users);
   }),
 
-  GetSingleUser: asyncHanlder(async (req, res) => {
+  GetSingleUser: asyncHandler(async (req, res) => {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400);
@@ -282,7 +295,7 @@ const controller = {
   // * @access PRIVATE
   // ! Unsure how to handle the attendance status at the moment,
   // ! might need to refactor once I get more of sense of how the frontend will work
-  MarkAttendance: asyncHanlder(async (req, res) => {
+  MarkAttendance: asyncHandler(async (req, res) => {
     // @Step: 1 - Validate data (event id, status)
     const validStatus = ['going', 'maybe'];
     const { status } = req.body;
@@ -338,10 +351,22 @@ const controller = {
               ref1: _id,
               ref2: event._id,
             },
+
           },
+
         },
         { new: true },
       );
+
+      //@ Step: 4 - Update the user's attendingEvents array
+
+      const user = await Users.findById(_id);
+      const attendingEvent = user.attendingEvents.find(
+        (event) => event.event.toString() === eventId.toString(),
+      );
+      attendingEvent.status = status;
+      await user.save();
+
       return res.status(200).send({
         message: `You have updated your attendance status for ${event.title} to ${status}`,
         attendance,
@@ -349,7 +374,7 @@ const controller = {
       });
     }
 
-    // @Step: 4 - If the user has not already marked their attendance status, push a new object to the attendance array
+    // @Step: 5 - If the user has not already marked their attendance status, push a new object to the attendance array
     attendance.push({ user: _id, status });
     await event.save();
     await Users.findByIdAndUpdate(
@@ -360,6 +385,10 @@ const controller = {
             activityDetails: `${req.user._id} marked their attendance status as ${status} for ${event._id}`,
             ref1: _id,
             ref2: event._id,
+          },
+          attendingEvents: {
+            event: event._id,
+            status,
           },
         },
       },
@@ -375,7 +404,7 @@ const controller = {
   // * @desc Delete a user from the attendance array of an event
   // * @route DELETE /api/events/:id/attend
   // * @access PRIVATE
-  DeleteAttendance: asyncHanlder(async (req, res) => {
+  DeleteAttendance: asyncHandler(async (req, res) => {
     const { _id } = req.user;
     const { id: eventId } = req.params;
 
@@ -410,6 +439,23 @@ const controller = {
 
       event.attendance = filteredAttendance;
       const updatedEvent = await event.save();
+
+      // const user = await Users.findById(_id);
+      // user.attendingEvents.pull({ event: eventId });
+
+      // * $pull is a mongoose method that removes an object from an array
+      // * $push is a mongoose method that adds an object to an array
+      
+      await Users.findByIdAndUpdate(
+        _id,
+        {
+          $pull: {
+            attendingEvents: { event: eventId },
+          },
+        },
+        { new: true },
+      );
+
       res.status(200).send({
         message: 'You have deleted your attendance status',
         updatedEvent,

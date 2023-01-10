@@ -11,9 +11,10 @@
   "scripts": {
     "lint": "eslint .",
     "lintfix": "eslint --fix .",
-    "dev": "nodemon main",
+    "dev": "cross-env NODE_ENV=dev nodemon main",
     "test": "jest",
-    "testWatch": "jest --watchAll --verbose"
+    "testWatch": "jest --watchAll --verbose",
+    "start": "cross-env NODE_ENV=prod node main"
   },
   "author": "Mac Fitton",
   "license": "ISC",
@@ -38,6 +39,7 @@
     "@babel/preset-env": "^7.20.2",
     "@types/jest": "^29.2.5",
     "babel-jest": "^29.3.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8.31.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",

@@ -1,21 +1,21 @@
 import { Router } from 'express';
-import apiController from '../../../controllers/api/api.controllers.js';
+import eventCont from '../../../controllers/api/events/events.controllers.js';
 import validators from '../../../middleware/validation/validators.js';
 
 const router = Router();
 
 router
   .route('/')
-  .get(apiController.GetAllEvents)
-  .post(validators.validateEventSchema, apiController.CreateEvent);
+  .get(eventCont.GetAllEvents)
+  .post(validators.validateEventSchema, eventCont.CreateEvent);
 
-router.route('/following').get(apiController.GetFollowingEvents);
+router.route('/following').get(eventCont.GetFollowingEvents);
 
-router.route('/:id').get(apiController.GetSingleEvent);
+router.route('/:id').get(eventCont.GetSingleEvent);
 
 router
   .route('/:id/attend')
-  .put(apiController.MarkAttendance)
-  .delete(apiController.DeleteAttendance);
+  .put(eventCont.MarkAttendance)
+  .delete(eventCont.DeleteAttendance);
 
 export default router;

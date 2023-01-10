@@ -67,6 +67,7 @@ const validators = {
     }
   },
   // !!! yup attempts to coerce the value to the type specified in the schema, turn that off by using strict(true) on a specific field or globally on the validation options
+  // eslint-disable-next-line consistent-return
   signUpSchema: async (req, res, next) => {
     const signUpSchema = yup.object().shape({
       username: yup
@@ -104,7 +105,7 @@ const validators = {
       if (valid) return next();
     } catch (error) {
       res.status(400);
-      next(error);
+      return next(error);
     }
   },
   loginSchema: async (req, res, next) => {

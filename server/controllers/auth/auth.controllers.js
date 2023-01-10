@@ -70,22 +70,32 @@ const controller = {
     // eslint-disable-next-line no-underscore-dangle
     const verifyToken = helpers.genToken(savedUser._id);
 
-    // const transporter = nodemailer.createTransport({
-    //   service: 'outlook',
-    //   host: 'smtp-mail.outlook.com',
-    //   auth: {
-    //     user: 'evntapp@outlook.com',
-    //     pass: 'tillery1',
-    //   },
-    // });
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.mailtrap.io',
-      port: 2525,
-      auth: {
-        user: '917368b2a7fa16',
-        pass: 'a843cfe71f62ee',
-      },
-    });
+    if (!verifyToken) {
+      res.status(400);
+      throw new Error('Email verification token could not be created');
+    }
+
+
+    let transporter;
+
+    if (process.env.NODE_ENV === 'prod') {
+      transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'evntweb@gmail.com',
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+    } else {
+      transporter = nodemailer.createTransport({
+        host: 'smtp.mailtrap.io',
+        port: 2525,
+        auth: {
+          user: '917368b2a7fa16',
+          pass: 'a843cfe71f62ee',
+        },
+      });
+    }
 
     const handlebarOptions = {
       viewEngine: {
@@ -99,11 +109,10 @@ const controller = {
     transporter.use('compile', hbs(handlebarOptions));
 
     const msg = {
-      from: '"Evnt" <evntapp@outlook.com>',
+      from: '"Evnt" <eventweb@gmail.com>',
       to: `${email}`,
       subject: 'Please verify account',
       template: 'email',
-
       context: {
         url: `http://localhost:5000/auth/verify/${verifyToken}`,
         user: username,
@@ -117,7 +126,7 @@ const controller = {
       throw new Error('Email could not be sent');
     }
     res.status(200).json({
-    message: 'You have successfully signed up. Please check your email to verify your account',
+      message: 'You have successfully signed up. Please check your email to verify your account',
 
     });
   }),

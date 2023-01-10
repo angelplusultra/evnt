@@ -70,11 +70,20 @@ const controller = {
     // eslint-disable-next-line no-underscore-dangle
     const verifyToken = helpers.genToken(savedUser._id);
 
+    // const transporter = nodemailer.createTransport({
+    //   service: 'outlook',
+    //   host: 'smtp-mail.outlook.com',
+    //   auth: {
+    //     user: 'evntapp@outlook.com',
+    //     pass: 'tillery1',
+    //   },
+    // });
     const transporter = nodemailer.createTransport({
-      service: 'outlook',
+      host: 'smtp.mailtrap.io',
+      port: 2525,
       auth: {
-        user: 'evntapp@outlook.com',
-        pass: 'tillery1',
+        user: '917368b2a7fa16',
+        pass: 'a843cfe71f62ee',
       },
     });
 
@@ -101,12 +110,15 @@ const controller = {
       },
     };
 
-    await transporter.sendMail(msg);
+    const mail = await transporter.sendMail(msg);
     // ! Later on, make it so the user can resend the email if they didn't get it
+    if (!mail) {
+      res.status(400);
+      throw new Error('Email could not be sent');
+    }
+    res.status(200).json({
+    message: 'You have successfully signed up. Please check your email to verify your account',
 
-    res.status(201).json({
-      message: 'User created successfully, please verify your account',
-      user: savedUser,
     });
   }),
 

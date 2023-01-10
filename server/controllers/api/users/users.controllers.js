@@ -154,7 +154,6 @@ const controller = {
     // sort following by most recent createdAt
 
     user.activity.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
     res.json(user);
   }),
 

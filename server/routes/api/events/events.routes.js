@@ -15,7 +15,7 @@ router.route('/:id').get(eventCont.GetSingleEvent);
 
 router
   .route('/:id/attend')
-  .put(eventCont.MarkAttendance)
+  .put(validators.validateAttendance, eventCont.MarkAttendance)
   .delete(eventCont.DeleteAttendance);
 
 export default router;

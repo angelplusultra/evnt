@@ -1,5 +1,5 @@
 import axios from 'axios';
-import asyncHandler from 'express-async-handler';
+import asyncHandler from 'express-async-handler'
 import mongoose from 'mongoose';
 import helpers from '../../../helpers/helpers.js';
 import Events from '../../../models/Events.js';
@@ -119,25 +119,10 @@ const controller = {
 
   MarkAttendance: asyncHandler(async (req, res) => {
     // @Step: 1 - Validate data (event id, status)
-    const validStatus = ['going', 'maybe'];
     const { status } = req.body;
     const { _id } = req.user;
     const { id: eventId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(eventId)) {
-      res.status(400);
-      throw new Error('Invalid event id');
-    }
-
-    if (!status) {
-      res.status(400);
-      throw new Error('Please provide a status');
-    }
-
-    if (!validStatus.includes(status)) {
-      res.status(400);
-      throw new Error('Please provide a valid status');
-    }
 
     const event = await Events.findById(eventId);
 
@@ -156,10 +141,8 @@ const controller = {
     // @Step: 3 - If the user has already marked their attendance status, update it
     if (attendanceStatusExists) {
       if (attendanceStatusExists.status === status) {
-        res.status(400);
-        throw new Error(
-          `You have already marked your attendance status as ${status}`,
-        );
+        res.status(401);
+         throw new Error(`You have already marked your attendance status as ${status}`);
       }
 
       attendanceStatusExists.status = status;

@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import * as yup from 'yup';
 //! NEEDS TESTING
 // * Schema validators
@@ -126,6 +127,29 @@ const validators = {
     } catch (error) {
       res.status(400);
       next(error);
+    }
+  },
+  validateAttendance: async (req, res, next) => {
+    const validStatus = ['going', 'maybe'];
+    const attendanceSchema = yup.object().shape({
+      status: yup
+        .string()
+        .required('a property of status ios required')
+        .typeError('status must be a string')
+        .oneOf(validStatus, 'status must be either "going" or "maybe"'),
+    }).required('status is required');
+
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      res.status(400);
+      return next(new Error('Invalid Event ID'));
+    }
+
+    try {
+      const valid = await attendanceSchema.validate(req.body, { strict: true });
+      if (valid) return next();
+    } catch (error) {
+      res.status(400);
+      return next(error);
     }
   },
 };

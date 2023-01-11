@@ -75,27 +75,16 @@ const controller = {
       throw new Error('Email verification token could not be created');
     }
 
+    const { NODE_ENV } = process.env;
 
-    let transporter;
-
-    if (process.env.NODE_ENV === 'prod') {
-      transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: 'evntweb@gmail.com',
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      });
-    } else {
-      transporter = nodemailer.createTransport({
-        host: 'smtp.mailtrap.io',
-        port: 2525,
-        auth: {
-          user: '917368b2a7fa16',
-          pass: 'a843cfe71f62ee',
-        },
-      });
-    }
+    const transporter = nodemailer.createTransport({
+      service: NODE_ENV === 'prod' ? 'gmail' : 'mailtrap',
+      auth: {
+        user: NODE_ENV === 'prod' ? 'evntweb@gmail.com' : '917368b2a7fa16',
+        pass:
+          NODE_ENV === 'prod' ? process.env.EMAIL_PASSWORD : 'a843cfe71f62ee',
+      },
+    });
 
     const handlebarOptions = {
       viewEngine: {
@@ -126,8 +115,8 @@ const controller = {
       throw new Error('Email could not be sent');
     }
     res.status(200).json({
-      message: 'You have successfully signed up. Please check your email to verify your account',
-
+      message:
+        'You have successfully signed up. Please check your email to verify your account',
     });
   }),
 

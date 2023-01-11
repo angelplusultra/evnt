@@ -1,9 +1,12 @@
-import {Outlet, Navigate} from 'react-router-dom';
+import { useEffect } from "react";
+import { Outlet, Navigate } from "react-router-dom";
 
-const Protect = () => {
-const user = true
+const Protect = ({ user }) => {
+  if (user === null) {
+    return <Navigate to="/login" />;
+  } else {
+    return <Outlet />;
+  }
+};
 
-    return ( user ? <Outlet /> : <Navigate to="/login" />);
-}
- 
 export default Protect;

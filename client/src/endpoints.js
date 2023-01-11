@@ -1,5 +1,6 @@
 const endpoints = {
-    signUp: 'http://localhost:5000/auth/signup',
-    logIn: 'http://localhost:5000/auth/login',
+    signUp: '/auth/signup',
+    logIn: '/auth/login',
 }
+export const domain = "http://localhost:5000"
 export default endpoints;

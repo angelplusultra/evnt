@@ -19,10 +19,12 @@ import endpoints, { domain } from "../endpoints";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import places from "../data/counties_list.json";
 import { useNavigate, NavLink } from "react-router-dom";
 import { FormControl, InputLabel } from "@mui/material";
+import { useContext } from "react";
+import { UserContext } from "../context/userContext.js";
 
 function Copyright(props) {
   return (
@@ -44,11 +46,18 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignInSide({ user }) {
+export default function SignInSide() {
   const navigate = useNavigate();
-  if (user !== null) {
-    navigate("/dashboard");
-  }
+
+const { user, setUser } = useContext(UserContext);
+
+
+  useEffect(() => {
+    if (user !== null) {
+        navigate("/dashboard");
+    }
+}, [user, navigate]);
+
   const format = places.map((county) => {
     return county.State;
   });

@@ -15,12 +15,12 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { yupResolver } from "@hookform/resolvers/yup";
-import schemas from "../validation/schemas";
 import endpoints, { domain } from "../endpoints";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useNavigate, Navigate } from "react-router-dom";
+import { useEffect, useContext } from "react";
+import { UserContext } from "../context/userContext";
 
 function Copyright(props) {
   return (
@@ -42,12 +42,16 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function SignInSide({ user }) {
+export default function SignInSide() {
   const navigate = useNavigate();
 
-  if (user !== null) {
-    navigate("/dashboard");
-  }
+  const { user, setUser } = useContext(UserContext);
+
+    useEffect(() => {
+        if (user !== null) {
+            navigate("/dashboard");
+        }
+    }, [user, navigate]);
 
   const location = useLocation();
   console.log(location.state);
@@ -72,8 +76,13 @@ export default function SignInSide({ user }) {
     })
       .then((res) => {
         if (res.data.token) {
-          // ! SAVE TOKEN IN LOCAL STAORAGE AND NAVFIGATE TO DASHBAORD
+
+          // @SAVE TOKEN IN LOCAL STAORAGE AND NAVFIGATE TO DASHBAORD 
+
           localStorage.setItem("token", res.data.token);
+            setUser(res.data.token);
+            navigate("/dashboard");
+
           toast.update(id, {
             render: "Welcome back, " + res.data.username,
             type: "success",

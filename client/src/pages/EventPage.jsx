@@ -72,7 +72,7 @@ const EventPage = () => {
   if (isFetched) {
 
 
-    const date = new Date(data.date);
+    const date = new Date(data?.date);
     const { title, location, description } = data;
     
     
@@ -80,7 +80,7 @@ const EventPage = () => {
 
     return (
       <Container>
-        <Typography variant="h2">{data.title}</Typography>
+        <Typography variant="h2">{data?.title}</Typography>
         <Typography variant="body1">Hosted by {host && host.username}</Typography>
         <Typography>
           {date.toLocaleDateString() + date.toLocaleTimeString()}

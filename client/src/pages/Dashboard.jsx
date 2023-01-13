@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { UserContext } from "../context/userContext.js";
 import axios from "axios";
-import endpoints, { domain } from "../endpoints";
+import endpoints, { domain } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
@@ -49,19 +49,23 @@ console.log(user)
     return <h1>Loading...</h1>
   }
   if(data) {
-    return (
-      // <div>
-      //   <h1>Dashboard</h1>
-      //   <h2>{data.data.message}</h2>
-      //   <ul>
-      //       {data.data.map((event, i) => (
-      //           <li key={i}>{event.title}</li>
-      //       ))}
-      //   </ul>
-      // </div>
+         
+    // return (
+    //   // <div>
+    //   //   <h1>Dashboard</h1>
+    //   //   <h2>{data.data.message}</h2>
+    //   //   <ul>
+    //   //       {data.data.map((event, i) => (
+    //   //           <li key={i}>{event.title}</li>
+    //   //       ))}
+    //   //   </ul>
+    //   // </div>
 
-      <Bashboard />
-    );
+    //   // <Bashboard data={data.data} />
+    // );
+    
+
+    return <Bashboard data={data.data} />
   }
 
 

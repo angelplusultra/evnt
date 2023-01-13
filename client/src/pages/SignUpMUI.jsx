@@ -15,7 +15,7 @@ import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { yupResolver } from "@hookform/resolvers/yup";
 import schemas from "../validation/schemas";
-import endpoints, { domain } from "../endpoints";
+import endpoints, { domain } from "../api/api";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";

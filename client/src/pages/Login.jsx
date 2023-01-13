@@ -15,7 +15,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { yupResolver } from "@hookform/resolvers/yup";
-import endpoints, { domain } from "../endpoints";
+import endpoints, { domain } from "../api/api";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate, Navigate } from "react-router-dom";

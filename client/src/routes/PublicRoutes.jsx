@@ -6,7 +6,6 @@ import Login from "../pages/Login";
 import Protect from "../components/Protect";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Dashboard from "../pages/Dashboard";
-import Dashboard2 from "../pages/DashboardMUI";
 import EventPage from "../pages/EventPage";
 
 const PublicRoutes = () => {
@@ -21,7 +20,6 @@ const PublicRoutes = () => {
             <Route path="event/:id" element={<EventPage />} />
             <Route path="profile" element={<>Profile Page</>} />
             <Route path="settings" element={<>Settings</>} />
-            <Route path="*" element={<h1>404</h1>} />
         </Route>    
         <Route path="*" element={<h1>404</h1>} />
     </Routes>

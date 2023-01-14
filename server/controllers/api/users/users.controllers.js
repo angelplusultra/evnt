@@ -81,9 +81,19 @@ const controller = {
           },
         };
       }
+      if (a.activityDetails.includes('joined')) {
+        const userId = a.activityDetails.split(' ')[0];
+        const user = await Users.findById(userId).select('username').lean();
+        return {
+          activityDetails: `${user.username} joined Evnt!`,
+          activityType: 'Sign Up',
+          id: a._id,
+        };
+      }
     });
 
     const formattedActivity = await Promise.all(formattedArray);
+    console.log(formattedActivity);
     res.status(200).json(formattedActivity);
   }),
 

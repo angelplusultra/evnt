@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { UserContext } from "../context/userContext.js";
 import axios from "axios";
-import endpoints, { domain } from "../api/api";
+import endpoints, { api, domain } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
@@ -19,16 +19,7 @@ console.log(user)
   const { data, isLoading, error } = useQuery({
     queryKey: ["getDashboard"],
     queryFn: () =>
-      axios({
-        method: "GET",
-        url: `${domain}${endpoints.getAllEvents}`,
-        headers: {
-            Authorization: `Bearer ${user}`,
-        },
-
-        withCredentials: true,
-
-      }),
+      api.query(user).get(api.endpoints.getAllEvents)
   });
 
   //! if somebody uses a fake token, they will be redirected to login page

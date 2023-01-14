@@ -1,0 +1,52 @@
+[
+	{
+		"username": "India",
+		"email": "india9268@protonmail.edu",
+		"isArtist": true,
+		"postalZip": "69957",
+		"locationTracking": ["San Diego", "Orange", "Los Angeles", "New York"]
+	},
+
+	{
+		"username": "Kylan",
+		"email": "kylan@example.com",
+		"isArtist": true,
+		"postalZip": "12345",
+		"locationTracking": ["San Diego", "Orange", "Los Angeles", "New York"]
+	},
+	{
+		"username": "Elvis",
+		"email": "elvis6314@hotmail.ca",
+		"isArtist": true,
+		"postalZip": "70418",
+		"locationTracking": ["San Diego", "Orange", "Los Angeles", "New York"]
+	},
+	{
+		"username": "Nigel",
+		"email": "nigel@outlook.couk",
+		"isArtist": true,
+		"postalZip": "94398",
+		"locationTracking": ["San Diego", "Orange", "Los Angeles", "New York"]
+	},
+	{
+		"username": "Macy",
+		"email": "macy@google.org",
+		"isArtist": false,
+		"postalZip": "81134",
+		"locationTracking": ["San Diego", "Orange", "Los Angeles", "New York"]
+	},
+	{
+		"username": "Vance",
+		"email": "vance1057@protonmail.com",
+		"isArtist": true,
+		"postalZip": "73442",
+		"locationTracking": ["San Diego", "Orange", "Los Angeles", "New York"]
+	},
+	{
+		"username": "Reed",
+		"email": "reed@yahoo.com",
+		"isArtist": true,
+		"postalZip": "85680",
+		"locationTracking": ["San Diego", "Orange", "Los Angeles", "New York"]
+	}
+]

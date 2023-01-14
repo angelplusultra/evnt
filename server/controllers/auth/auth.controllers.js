@@ -4,6 +4,7 @@ import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import hbs from 'nodemailer-express-handlebars';
 import path from 'path';
+import mongoose from 'mongoose';
 import helpers from '../../helpers/helpers.js';
 import Users from '../../models/Users.js';
 
@@ -47,15 +48,16 @@ const controller = {
 
     const hash = await helpers.hashPassword(password, res);
     // eslint-disable-next-line max-len
-
+    const userID = new mongoose.Types.ObjectId();
     const newUser = new Users({
+      _id: userID,
       username,
       email,
       password: hash,
       isArtist,
       areaCode,
       locationTracking,
-      activity: [{ activityDetails: 'Signed up' }],
+      activity: [{ activityDetails: `${userID} joined Evnt!`, user: userID }],
     });
 
     const savedUser = await newUser.save();

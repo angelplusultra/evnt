@@ -11,26 +11,21 @@ import {
 } from "@mui/material";
 import { useContext } from "react";
 import { UserContext } from "../context/userContext";
-import endpoints, { domain } from "../api/api";
+import endpoints, { api, domain } from "../api/api";
 import { useNavigate } from "react-router-dom";
 
+
 function EventCard({ host, title, location, id }) {
+console.log(host)
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
-  console.log(host);
-
+// not fetching each host data ?????
   const { data, error, isLoading } = useQuery({
-    queryKey: ["getUsername"],
+    queryKey: ["getUsername", host],
     queryFn: () =>
-      axios({
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${user}`,
-        },
-        url: `${domain + endpoints.getSingleUser + host}`,
-        withCredentials: true,
-      }).then((res) => res.data),
+      api.query(user).get(api.endpoints.getSingleUser + host).then((res) => res.data),
   });
+
 
   if (isLoading) {
     return <h1>Loading...</h1>;

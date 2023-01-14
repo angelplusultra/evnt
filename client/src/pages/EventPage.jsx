@@ -38,7 +38,7 @@ const EventPage = () => {
         .get(api.endpoints.getSingleEvent + id)
         .then((res) => res.data),
   });
-        console.log("🚀 ~ file: EventPage.jsx:41 ~ EventPage ~ data", data)
+        
 
 
 
@@ -47,14 +47,14 @@ const EventPage = () => {
 
   const { data: host, error, isLoading, isFetched, isFetching } = useQuery({
     
-    queryKey: ["getUsername"],
+    queryKey: ["getUsername", id],
     queryFn: () => api.query(user).get(api.endpoints.getSingleUser + data.host).then((res) => res.data),
+    
     enabled: eventIsFetched,
     });
 
 
-
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <Box
         height="100vh"
@@ -93,6 +93,7 @@ const EventPage = () => {
     );
   }
 };
+
 
 
 export default EventPage;

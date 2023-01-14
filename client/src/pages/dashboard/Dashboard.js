@@ -90,11 +90,16 @@ const Drawer = styled(MuiDrawer, {
 const mdTheme = createTheme();
 
 function DashboardContent({ data }) {
+  console.log("🚀 ~ file: Dashboard.js:93 ~ DashboardContent ~ data", data)
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
+ 
 
+
+
+  
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: "flex" }}>
@@ -167,14 +172,13 @@ function DashboardContent({ data }) {
         >
           <Toolbar />
           <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={2}>
-              {/* Chart */}
-              {data.map((ev) => {
+            <Grid container spacing={2}> 
+              {data.map((ev, i) => {
                 return (
-                  <Grid item xs={12} md={12} lg={12}>
+                  <Grid key={i} item xs={12} md={12} lg={12}>
                     <EventCard
                       host={ev.host}
-                      key={ev.id}
+                      key={i}
                       title={ev.title}
                       description={ev.description}
                       location={ev.location}
@@ -193,6 +197,7 @@ function DashboardContent({ data }) {
 }
 
 export default function Dashboard({ data }) {
+
  
   return <DashboardContent data={data} />;
 }

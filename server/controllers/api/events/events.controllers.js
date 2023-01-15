@@ -23,7 +23,7 @@ const controller = {
 
     allEvents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    res.json(allEvents);
+    res.status(200).json(allEvents);
   }),
   // * @desc Get Single Event
   // * @route GET /api/events/:id

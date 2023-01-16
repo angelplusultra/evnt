@@ -4,8 +4,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useUser } from "./context/userContext.js";
 
-
-
 function Views() {
   const { loading } = useUser();
 

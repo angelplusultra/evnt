@@ -14,18 +14,19 @@ import { UserContext } from "../context/userContext";
 import endpoints, { api, domain } from "../api/api";
 import { useNavigate } from "react-router-dom";
 
-
 function EventCard({ host, title, location, id }) {
-console.log(host)
+  console.log(host);
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
-// not fetching each host data ?????
+  // not fetching each host data ?????
   const { data, error, isLoading } = useQuery({
     queryKey: ["getUsername", host],
     queryFn: () =>
-      api.query(user).get(api.endpoints.getSingleUser + host).then((res) => res.data),
+      api
+        .query(user)
+        .get(api.endpoints.getSingleUser + host)
+        .then((res) => res.data),
   });
-
 
   if (isLoading) {
     return <h1>Loading...</h1>;
@@ -37,20 +38,31 @@ console.log(host)
     return (
       <Card sx={{ minWidth: 275 }}>
         <CardContent>
-          <Box sx={{ display: "flex", alignItems: 'center', justifyContent: 'left', gap: 1 }}>
-            <Avatar sx={{ bgcolor: "secondary", height: 40, width: 40 }}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "left",
+              gap: 1,
+            }}
+          >
+            <Avatar
+              sx={{ bgcolor: "secondary", height: 40, width: 40 }}
               alt="Remy Sharp"
               src="../../
       public/nopic.jpg"
             >
               {data.username.charAt(0)}
             </Avatar>
-            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            {data.username}
-          </Typography>
+            <Typography
+              sx={{ fontSize: 14 }}
+              color="text.secondary"
+              gutterBottom
+            >
+              {data.username}
+            </Typography>
           </Box>
 
-          
           <Typography variant="h5" component="div">
             {title}
           </Typography>
@@ -60,7 +72,12 @@ console.log(host)
           <Typography variant="body2">Description</Typography>
         </CardContent>
         <CardActions>
-          <Button onClick={() => navigate(`/event/${id}`, {state: data})  } size="small">See Event</Button>
+          <Button
+            onClick={() => navigate(`/events/${id}`, { state: data })}
+            size="small"
+          >
+            See Event
+          </Button>
         </CardActions>
       </Card>
     );

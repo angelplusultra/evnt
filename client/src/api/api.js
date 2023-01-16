@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const domain = "http://localhost:5000";
+export const domain = process.env.REACT_APP_DOMAIN || "http://localhost:5000";
 
 const endpoints = {
   signUp: "/auth/signup",
@@ -8,6 +8,7 @@ const endpoints = {
   getAllEvents: "/api/events",
   getSingleUser: "/api/users/",
   getSingleEvent: "/api/events/",
+  createEvent: "/api/events",
 };
 
 export const api = {

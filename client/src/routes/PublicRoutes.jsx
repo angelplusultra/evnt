@@ -5,9 +5,10 @@ import Login from "../pages/Login";
 
 import Protect from "../components/Protect";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Dashboard from "../pages/Dashboard";
 import EventPage from "../pages/EventPage";
+import CreateEvent from "../pages/CreateEvent";
 
 const PublicRoutes = () => {
   return (
@@ -18,7 +19,11 @@ const PublicRoutes = () => {
         <Route path="signup" element={<SignUpMUI />} />
         <Route element={<Protect />}>
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="event/:id" element={<EventPage />} />
+          <Route path="events">
+            <Route index element={<h1>Event Page</h1>} />
+            <Route path="create" element={<CreateEvent />} />
+            <Route path=":id" element={<EventPage />} />
+          </Route>
           <Route path="profile" element={<>Profile Page</>} />
           <Route path="settings" element={<>Settings</>} />
         </Route>

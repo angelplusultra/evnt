@@ -21,38 +21,46 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 const EventPage = () => {
-    const [queryState, setQueryState] = useState(false);
+  const [queryState, setQueryState] = useState(false);
   const { id } = useParams();
   const { user } = useContext(UserContext);
   const [state, setState] = useState(true);
   const location = useLocation();
 
-
-
-//@ Get single event data
-  const { data, error: eventFetchError, isLoading: eventFetchisLoading, isFetched: eventIsFetched } = useQuery({
-    queryKey: ["getsingleevent"],
+  //@ Get single event data
+  const {
+    data,
+    error: eventFetchError,
+    isLoading: eventFetchisLoading,
+    isFetched: eventIsFetched,
+  } = useQuery({
+    queryKey: ["getsingleevent", id],
     queryFn: () =>
       api
         .query(user)
         .get(api.endpoints.getSingleEvent + id)
         .then((res) => res.data),
   });
-        
 
+  //@ Get host data from event, this fetch is dependent on the event fetch, look at the enabled property
+  //@   https://daily-dev-tips.com/posts/dependant-queries-in-react-query/
 
-
-  //@ Get host data from event, this fetch is dependent on the event fetch, look at the enabled property 
-//@   https://daily-dev-tips.com/posts/dependant-queries-in-react-query/
-
-  const { data: host, error, isLoading, isFetched, isFetching } = useQuery({
-    
+  const {
+    data: host,
+    error,
+    isLoading,
+    isFetched,
+    isFetching,
+  } = useQuery({
     queryKey: ["getUsername", id],
-    queryFn: () => api.query(user).get(api.endpoints.getSingleUser + data.host).then((res) => res.data),
-    
-    enabled: eventIsFetched,
-    });
+    queryFn: () =>
+      api
+        .query(user)
+        .get(api.endpoints.getSingleUser + data.host)
+        .then((res) => res.data),
 
+    enabled: eventIsFetched,
+  });
 
   if (isLoading || isFetching) {
     return (
@@ -66,34 +74,35 @@ const EventPage = () => {
       </Box>
     );
   }
- if(error){
-    return <h1>{error.response.data.message}</h1>
- }
+  if (error) {
+    return <h1>{error.response.data.message}</h1>;
+  }
   if (isFetched) {
-
-
     const date = new Date(data?.date);
     const { title, location, description } = data;
-    
-    
-    //format date
 
+    //format date
+    console.log(data);
     return (
       <Container>
         <Typography variant="h2">{data?.title}</Typography>
-        <Typography variant="body1">Hosted by {host && host.username}</Typography>
+        <Typography variant="body1">
+          Hosted by {host && host.username}
+        </Typography>
         <Typography>
           {date.toLocaleDateString() + date.toLocaleTimeString()}
         </Typography>
-        <Typography>{data.title}</Typography>
+        <Typography>{data.location.address}</Typography>
+        <Typography>{data.location.city}</Typography>
+        <Typography>{data.location.zipCode}</Typography>
+        <Typography>{data.location.city}</Typography>
+        <Typography>{data.genre}</Typography>
 
-        <Typography>{data.title}</Typography>
-    
+       
+
       </Container>
     );
   }
 };
-
-
 
 export default EventPage;

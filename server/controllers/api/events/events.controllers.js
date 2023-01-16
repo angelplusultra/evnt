@@ -1,7 +1,6 @@
 import axios from 'axios';
-import asyncHandler from 'express-async-handler'
+import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
-import helpers from '../../../helpers/helpers.js';
 import Events from '../../../models/Events.js';
 import Users from '../../../models/Users.js';
 
@@ -123,7 +122,6 @@ const controller = {
     const { _id } = req.user;
     const { id: eventId } = req.params;
 
-
     const event = await Events.findById(eventId);
 
     if (!event) {
@@ -142,7 +140,7 @@ const controller = {
     if (attendanceStatusExists) {
       if (attendanceStatusExists.status === status) {
         res.status(401);
-         throw new Error(`You have already marked your attendance status as ${status}`);
+        throw new Error(`You have already marked your attendance status as ${status}`);
       }
 
       attendanceStatusExists.status = status;

@@ -6,7 +6,6 @@ const schemas = {
       .string('title must be a string')
       .required('title is required')
       .typeError('title must be a string'),
-    host: yup.string().required(),
     location: yup
       .object()
       .shape({

@@ -15,16 +15,6 @@ const validators = {
     }
     const errors = [];
 
-    if (!mongoose.Types.ObjectId.isValid(req.body.host)) {
-      res.status(400);
-      errors.push(new Error('Invalid host id'));
-    }
-
-    if (req.body.host !== req.user._id.toString()) {
-      res.status(400);
-      errors.push(new Error('You cannot create an event for another user'));
-    }
-
     if (!validator.isDate(new Date(req.body.date))) {
       res.status(400);
       errors.push(new Error('Please enter a valid date'));

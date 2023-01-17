@@ -57,16 +57,14 @@ const controller = {
 
   CreateEvent: asyncHandler(async (req, res) => {
     const {
-      title, host, location, date, genre, lineup, attendance,
+      title, location, date, genre, lineup, attendance,
     } = req.body;
+
+    const host = req.user._id;
 
     // @desc Data Validation
     // helpers.validateEventData(host, location, date, attendance, res);
 
-    if (host !== req.user._id.toString()) {
-      res.status(400);
-      throw new Error('You cannot create an event for another user');
-    }
     const locationData = await axios.get(
       `https://service.zipapi.us/zipcode/county/${location.zipCode}?X-API-KEY=${process.env.ZIP_API_KEY}`,
     );
@@ -107,7 +105,7 @@ const controller = {
 
     await event.save();
 
-    res.json(event);
+    res.status(200).json(event);
   }),
 
   // * @desc Push a new attendance object to the event conatining the user id and their status (going or maybe)

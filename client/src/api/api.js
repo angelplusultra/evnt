@@ -9,6 +9,9 @@ const endpoints = {
   getSingleUser: "/api/users/",
   getSingleEvent: "/api/events/",
   createEvent: "/api/events",
+  markAttendance: "/api/events/",
+  getMe: '/api/users/me',
+  deleteAttendance: '/api/events/',
 };
 
 export const api = {

@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import SignUpMUI from "../pages/SignUpMUI";
 import Landing from "../pages/Landing";
 import Login from "../pages/Login";
@@ -20,7 +20,7 @@ const PublicRoutes = () => {
         <Route element={<Protect />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="events">
-            <Route index element={<h1>Event Page</h1>} />
+            <Route index element={<Navigate to="/dashboard" /> } />
             <Route path="create" element={<CreateEvent />} />
             <Route path=":id" element={<EventPage />} />
           </Route>

@@ -20,6 +20,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 
 function CreateEvent() {
+  let toastId;
   const navigate = useNavigate();
   // @1 Get user from context
   const { user } = useUser();
@@ -34,6 +35,7 @@ function CreateEvent() {
   function addArtistToList() {
     if (!input) return setError("Please enter an artist");
     setLineup([...lineup, input]);
+    setInput("");
   }
 
   // @2 Establish React Hook Form
@@ -48,13 +50,23 @@ function CreateEvent() {
   // @3 Establish React Query W/ mutation
   const { status, error, mutate } = useMutation({
     mutationFn: (data) => api.query(user).post(api.endpoints.createEvent, data),
-    onSuccess: (data) => navigate(`/events/${data.data._id}`),
-    onMutate: () => toast.loading("Creating event..."),
+    onSuccess: (data) => {
+      console.log(data);
+      toast.update(toastId, {
+        render: "Event created successfully",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+      navigate(`/events/${data.data._id}`);
+    },
+    onMutate: () => {
+      toastId = toast.loading("Creating event...");
+    },
   });
   function onSubmit(data) {
     if (lineup.length === 0)
       return setError("Please add at least one artist to the lineup");
-
 
     const formattedData = {
       ...data,
@@ -166,10 +178,10 @@ function CreateEvent() {
           {...register("location.zipCode", {
             required: "Zip Code is required",
             validate: (value) => {
-                const isValidZip = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(value);
-                return isValidZip || "Please enter a valid zip code";
-            }
-        })}
+              const isValidZip = /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(value);
+              return isValidZip || "Please enter a valid zip code";
+            },
+          })}
         />
         <TextField
           margin="normal"

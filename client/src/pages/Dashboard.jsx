@@ -6,11 +6,17 @@ import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
 import Bashboard from "./dashboard/Dashboard.js";
+import { useLocation } from "react-router-dom";
 
 const Dashboard = () => {
+  const location = useLocation();
   const { user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
-
+  useEffect(() => {
+    if (location.state) {
+      toast.error(location.state.error);
+    }
+  }, []);
   console.log(user);
   const { data, isLoading, error } = useQuery({
     queryKey: ["getDashboard"],

@@ -30,12 +30,14 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
 import LoadingButton from '@mui/lab/LoadingButton';
+import User from "../components/User";
 
 const EventPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { user, userDetails } = useContext(UserContext);
   const [attendanceState, setAttendanceState] = useState(false);
+  let toastId
 
 
   //@ Get single event data
@@ -84,6 +86,7 @@ const EventPage = () => {
         .then((res) => res.data),
 
     enabled: eventData?._id !== undefined,
+    refetchOnWindowFocus: false,
   });
 
   const {
@@ -100,17 +103,23 @@ const EventPage = () => {
         .then((res) => res.data),
     enabled: false,
     onMutate: (data) => {
-      toast.info(`Marking your attendance as ${data}`);
+     toastId = toast.info(`Marking your attendance as ${data}`);
     },
     onSuccess: (data) => {
       console.log(data);
-      toast.success(data.message);
+      toast.update(toastId, {
+        render: data.message,
+        type: 'success',
+        autoClose: 3000,
+        delay: 2000
+      })
       setAttendanceState(data.status);
       refetch();
     }
   });
   const {
     mutate: deleteAttendance,
+    isLoading: deleteAttendanceLoading,
     
   } = useMutation({
     mutationKey: ["deleteAttendance", id],
@@ -121,7 +130,13 @@ const EventPage = () => {
         .then((res) => res.data),
     enabled: false,
     onSuccess: () => {
-      refetch()
+      toast.error("Attendance deleted", {
+        autoClose: 2000
+      });
+      setAttendanceState(false);
+      refetch();
+      
+      
     }
   });
 
@@ -150,8 +165,6 @@ const EventPage = () => {
   function handleAttendanceClick({ status, dlt }) {
     if (dlt) {
       deleteAttendance();
-      setAttendanceState(false);
-      toast.success(`You deleted your attendance`);
       return;
     }
     markAttendance(status);
@@ -202,11 +215,12 @@ function ButtonContent({attendType}){
         ))}
       </List>
       <Typography variant="h4">Attendance</Typography>
+      {
+        eventData.attendance.length === 0 && <Typography>Currently no attendees</Typography>
+      }
       <List>
         {eventData.attendance.map((user) => (
-          <ListItem>
-            <ListItemText>{user.user}</ListItemText>
-          </ListItem>
+          <User userId={user.user} status={user.status} />
         ))}
       </List>
       {attendanceState && (
@@ -216,7 +230,7 @@ function ButtonContent({attendType}){
       )}
       <ButtonGroup variant="contained">
         {attendanceState ? (
-          <LoadingButton variant="contained" loading={markAttendanceLoading} onClick={() => handleAttendanceClick({dlt: true})}>Leave Event</LoadingButton>
+          <LoadingButton color="error" loading={deleteAttendanceLoading} variant="contained"  onClick={() => handleAttendanceClick({dlt: true})}>Leave Event</LoadingButton>
         ) : (
           <>
             <LoadingButton variant="contained" loading={markAttendanceLoading} onClick={() => handleAttendanceClick({status: "going"})}>

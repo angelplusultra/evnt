@@ -9,6 +9,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Dashboard from "../pages/Dashboard";
 import EventPage from "../pages/EventPage";
 import CreateEvent from "../pages/CreateEvent";
+import ProfilePage from "../pages/Profile";
+import ValidateUser from "../components/validation/ValidateUser";
 
 const PublicRoutes = () => {
   return (
@@ -20,9 +22,15 @@ const PublicRoutes = () => {
         <Route element={<Protect />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="events">
-            <Route index element={<Navigate to="/dashboard" /> } />
+            <Route index element={<Navigate to="/dashboard" />} />
             <Route path="create" element={<CreateEvent />} />
             <Route path=":id" element={<EventPage />} />
+          </Route>
+          <Route path="users">
+            <Route index element={<Navigate to="/dashboard" />} />
+            <Route element={<ValidateUser />}>
+              <Route path=':id' element={<ProfilePage />} />
+            </Route>
           </Route>
           <Route path="profile" element={<>Profile Page</>} />
           <Route path="settings" element={<>Settings</>} />

@@ -36,6 +36,11 @@ const userSchema = new mongoose.Schema(
       default: [],
       ref: 'User',
     },
+    followers: {
+      type: [mongoose.Schema.Types.ObjectId],
+      default: [],
+      ref: 'User',
+    },
     areaCode: {
       type: String,
       required: true,

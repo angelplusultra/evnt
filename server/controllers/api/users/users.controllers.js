@@ -137,17 +137,20 @@ const controller = {
       const filtered = user.following.filter(
         (id) => id.toHexString() !== userId,
       );
+      const filtered2 = userExist.followers.filter(
+        (id) => id.toHexString() !== _id.toHexString(),
+      );
+      userExist.followers = filtered2;
       user.following = filtered;
+      await userExist.save();
       await user.save();
       return res
         .status(200)
         .send({ message: `${userExist.username} unfollowed` });
     }
     user.following.push(userId);
-    // ! This is experimental, attempting to populate an array of strings containing the users
-    // ! activity with references to other users or events. We send the user id and then the client
-    // ! can make a request to the server to get the actual display name and the id can be used on
-    // ! the frontend to link to the user profile or event page via a route param
+    userExist.followers.push(_id);
+
     user.activity.push({
       activityDetails: `${user._id} followed ${userExist._id}`,
     });

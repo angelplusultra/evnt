@@ -29,10 +29,10 @@ const {user: token} = useUser()
       {userData.following.map((user, i ) => (
         <User key={i} userId={user} />
       ))}
-      <Typography>Followers</Typography>
+      {/* <Typography>Followers</Typography>
        {userData.followers.map((user, i ) => (
         <User key={i} userId={user} />
-      ))}
+      ))} */}
     </Container>
   );
 }

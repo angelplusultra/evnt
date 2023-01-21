@@ -1,7 +1,6 @@
 //create user context
 import { createContext, useContext, useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { api } from "../api/api"
+import { api } from "../api/api";
 export const UserContext = createContext();
 
 export function useUser() {
@@ -20,19 +19,28 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    console.log("🚀 ~ file: App.js:18 ~ useEffect ~ token", token);
 
     if (token !== null) {
-      api.query(token).get(api.endpoints.getMe).then(res  => {
-      setUserDetails(res.data);  
-      }).catch(err => {
-        setUser(null);
-      })
-      setUser(token);
+      api
+        .query(token)
+        .get(api.endpoints.getMe)
+        .then((res) => {
+          setUserDetails(res.data);
+          setUser(token)
+          setLoading(false);
+        })
+
+        .catch((err) => {
+          console.log(err.response.data.message);
+          localStorage.removeItem("token");
+          setLoading(false)
+          return setUser(null);
+        });
+      
     } else {
       setUser(null);
     }
-    setLoading(false);
+   
   }, [user]);
 
   return (

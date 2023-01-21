@@ -121,7 +121,7 @@ const controller = {
       throw new Error('You cannot follow yourself');
     }
 
-    const userExist = await Users.findById(userId).lean();
+    const userExist = await Users.findById(userId);
 
     if (!userExist) {
       res.status(400);
@@ -142,6 +142,7 @@ const controller = {
       );
       userExist.followers = filtered2;
       user.following = filtered;
+
       await userExist.save();
       await user.save();
       return res
@@ -155,6 +156,7 @@ const controller = {
       activityDetails: `${user._id} followed ${userExist._id}`,
     });
     await user.save();
+    await userExist.save();
     return res.status(200).send({ message: `${userExist.username} followed` });
 
     // const user = await Users

@@ -57,7 +57,7 @@ const controller = {
 
   CreateEvent: asyncHandler(async (req, res) => {
     const {
-      title, location, date, genre, lineup, attendance,
+      title, location, date, genre, lineup,
     } = req.body;
 
     const host = req.user._id;
@@ -78,7 +78,7 @@ const controller = {
       date,
       genre,
       lineup,
-      attendance,
+      attendance: [{ user: host, status: 'going' }],
     });
     const [county] = counties;
     event.location.county = county;

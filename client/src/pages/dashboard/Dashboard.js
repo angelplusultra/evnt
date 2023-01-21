@@ -16,7 +16,7 @@ import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import ListItems, { mainListItems, secondaryListItems } from "./listItems";
+import ListItems, { secondaryListItems } from "./listItems";
 import EventCard from "../../components/EventCard";
 
 function Copyright(props) {

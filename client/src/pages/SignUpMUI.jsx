@@ -9,7 +9,7 @@ import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { Select, MenuItem } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -18,11 +18,10 @@ import schemas from "../validation/schemas";
 import endpoints, { domain } from "../api/api";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import places from "../data/counties_list.json";
 import { useNavigate, NavLink } from "react-router-dom";
-import { FormControl, InputLabel } from "@mui/material";
 import { useContext } from "react";
 import { UserContext } from "../context/userContext.js";
 
@@ -49,7 +48,7 @@ const theme = createTheme();
 export default function SignInSide() {
   const navigate = useNavigate();
 
-const { user, setUser } = useContext(UserContext);
+const { user } = useContext(UserContext);
 
 
   useEffect(() => {
@@ -72,8 +71,6 @@ const { user, setUser } = useContext(UserContext);
     register,
     handleSubmit,
     formState: { errors },
-    control,
-    watch,
   } = useForm({
     resolver: yupResolver(schemas.signUpSchema),
   });
@@ -84,9 +81,6 @@ const { user, setUser } = useContext(UserContext);
     }
   });
   console.log(errors);
-  const testSubmit = (data) => {
-    console.log(data);
-  };
 
   async function onSubmit(data) {
     setLoading(true);

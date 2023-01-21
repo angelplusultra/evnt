@@ -12,6 +12,7 @@ import CreateEvent from "../pages/CreateEvent";
 import ProfilePage from "../pages/Profile";
 import ValidateUser from "../components/validation/ValidateUser";
 
+
 const PublicRoutes = () => {
   return (
     <QueryClientProvider client={new QueryClient()}>
@@ -21,6 +22,7 @@ const PublicRoutes = () => {
         <Route path="signup" element={<SignUpMUI />} />
         <Route element={<Protect />}>
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="profile" element={<ProfilePage />} />
           <Route path="events">
             <Route index element={<Navigate to="/dashboard" />} />
             <Route path="create" element={<CreateEvent />} />

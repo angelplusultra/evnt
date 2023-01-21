@@ -13,9 +13,13 @@ import { useNavigate } from 'react-router-dom';
 
 
 const ListItems = () => {
+
 const navigate = useNavigate();
 const handleHomeClick = () => {
   navigate('/dashboard');
+}
+const handleProfileClick = () => {
+  navigate('/profile');
 }
 
 const handleCreateEventClick = () => {
@@ -35,12 +39,6 @@ const handleCreateEventClick = () => {
       </ListItemIcon>
       <ListItemText primary="Activity" />
     </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <PeopleIcon />
-      </ListItemIcon>
-      <ListItemText primary="Events" />
-    </ListItemButton>
     {/* Create Event */}
     <ListItemButton onClick={handleCreateEventClick}>
       <ListItemIcon>
@@ -48,11 +46,11 @@ const handleCreateEventClick = () => {
       </ListItemIcon>
       <ListItemText primary="Create Event" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton onClick={handleProfileClick}>
       <ListItemIcon>
         <LayersIcon />
       </ListItemIcon>
-      <ListItemText primary="Integrations" />
+      <ListItemText primary="Profile" />
     </ListItemButton>
   </React.Fragment>
   );

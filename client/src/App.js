@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useUser } from "./context/userContext.js";
 
 function Views() {
-  const { loading } = useUser();
+  const { loading , isRefetching} = useUser();
 
   if (loading) return <h1>Loading...</h1>;
 

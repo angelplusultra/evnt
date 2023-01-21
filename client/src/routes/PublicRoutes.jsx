@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Link } from "react-router-dom";
 import SignUpMUI from "../pages/SignUpMUI";
 import Landing from "../pages/Landing";
 import Login from "../pages/Login";
@@ -15,7 +15,11 @@ import ValidateUser from "../components/validation/ValidateUser";
 
 const PublicRoutes = () => {
   return (
-    <QueryClientProvider client={new QueryClient()}>
+    <>
+      <nav>
+        <Link to='/profile'>Profile</Link>
+        <Link to='/dashboard'>Dashboard</Link>
+      </nav>
       <Routes>
         <Route index element={<Landing />} />
         <Route path="login" element={<Login />} />
@@ -40,7 +44,7 @@ const PublicRoutes = () => {
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
       <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+ </>   
   );
 };
 

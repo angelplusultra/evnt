@@ -84,7 +84,7 @@ const { user } = useContext(UserContext);
 
   async function onSubmit(data) {
     setLoading(true);
-
+    console.log(data);
     const id = toast.loading("Signing up...");
 
     // validate the form data
@@ -257,7 +257,8 @@ const { user } = useContext(UserContext);
                     {...register("locationTracking.0")}
                   >
                     {counties.map((county, i) => (
-                      <MenuItem key={i} value={county.County}>
+
+                      <MenuItem key={i} value={county.County.replace('County', '').trim()}>
                         {county.County}
                       </MenuItem>
                     ))}

@@ -1,7 +1,9 @@
 import asyncHandler from 'express-async-handler';
 import mongoose from 'mongoose';
+import streamifier from 'streamifier';
 import Events from '../../../models/Events.js';
 import Users from '../../../models/Users.js';
+import cloudinary from '../../../config/cloudinary.js';
 
 const controller = {
   // * @desc Get the activity of users the user is following
@@ -93,14 +95,15 @@ const controller = {
     });
 
     const formattedActivity = await Promise.all(formattedArray);
-    console.log(formattedActivity);
     res.status(200).json(formattedActivity);
   }),
 
   GetFollowers: asyncHandler(async (req, res) => {
     const { _id } = req.user;
 
-    const followers = await Users.find({ following: _id }).lean().select('username _id');
+    const followers = await Users.find({ following: _id })
+      .lean()
+      .select('username _id');
     res.status(200).json(followers);
   }),
 
@@ -192,6 +195,55 @@ const controller = {
       throw new Error('User does not exist');
     }
     delete user.password;
+    res.status(200).json(user);
+  }),
+  UploadSingleProfilePicture: asyncHandler(async (req, res) => {
+    const file = req.files.image;
+
+    // eslint-disable-next-line no-shadow
+    const uploadFromBuffer = (file) => new Promise((resolve, reject) => {
+      const cldUploadStream = cloudinary.uploader.upload_stream({
+        folder: '/event/users/images/profileimages',
+        filename_override: `${Date.now()}_${file.name}`,
+      }, (err, result) => {
+        if (result) {
+          resolve(result);
+        } else {
+          reject(new Error('Something went wrong with uploading the image'));
+        }
+      });
+      streamifier.createReadStream(file.data).pipe(cldUploadStream);
+    });
+
+    const fileUploadResult = await uploadFromBuffer(file);
+
+    // return console.log(file);
+    // const promisfyFileUpload = () => new Promise((resolve, reject) => {
+    //   file.mv(filePath, (err) => {
+    //     if (err) {
+    //       return reject(new Error('File could not be uploaded'));
+    //     }
+    //     return resolve(true);
+    //   });
+    // });
+
+    const user = await Users.findByIdAndUpdate(
+      req.user._id,
+      {
+        $push: {
+          'images.profileImages': {
+            imagePath: fileUploadResult.secure_url,
+            cloudinaryId: fileUploadResult.public_id,
+          },
+          activity: {
+            activityDetails: `${req.user._id} uploaded a new profile image`,
+            user: req.user._id,
+          },
+        },
+      },
+      { new: true },
+    ).lean();
+
     res.status(200).json(user);
   }),
 };

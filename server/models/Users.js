@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
     },
     password: {
       type: String,
@@ -23,6 +24,7 @@ const userSchema = new mongoose.Schema(
     isArtist: {
       type: Boolean,
       default: false,
+      immutable: true,
     },
     //! Location tracking to be used later, for now, users are
     //! created and get events based on a single area code they provide
@@ -57,6 +59,14 @@ const userSchema = new mongoose.Schema(
       }],
       default: [],
       ref: 'Event',
+    },
+    images: {
+      profileImages: {
+        type: [{
+          imagePath: String,
+          cloudinaryId: String,
+        }],
+      },
     },
     activity: {
       type: [

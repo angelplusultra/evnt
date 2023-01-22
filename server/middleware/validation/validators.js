@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import validator from 'validator';
 import * as yup from 'yup';
+import path from 'path';
+
 // eslint-disable-next-line import/no-named-as-default
 import schemas from '../../validation/schemas/schemas.js';
 //! NEEDS TESTING
@@ -75,6 +77,35 @@ const validators = {
     } catch (error) {
       res.status(400);
       return next(error);
+    }
+  },
+  validateProfileImage: (req, res, next) => {
+    if (!req.files || Object.keys(req.files).length === 0) {
+      res.status(400);
+      return next(new Error('No image uploaded'));
+    }
+    if (!req.files.image) {
+      res.status(400);
+      return next(new Error('Uploaded image must contain a key called "image"'));
+    }
+    const extName = path.extname(req.files.image.name);
+    let fileIsValid;
+    switch (extName) {
+      case '.jpg':
+        fileIsValid = true;
+        break;
+      case '.png':
+        fileIsValid = true;
+        break;
+      case '.jpeg':
+        fileIsValid = true;
+        break;
+      default:
+        return next(new Error('File type not supported'));
+    }
+
+    if (fileIsValid) {
+      return next();
     }
   },
 };

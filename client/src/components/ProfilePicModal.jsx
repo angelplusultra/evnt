@@ -11,9 +11,12 @@ import { useRef } from "react";
 import { useState } from "react";
 import { api } from "../api/api";
 import { useUser } from "../context/userContext";
-import axios from 'axios'
+import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
-
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { ErrorMessage } from "@hookform/error-message";
 const style = {
   position: "absolute",
   top: "50%",
@@ -28,56 +31,47 @@ const style = {
 function ProfilePicModal({ modalState, handleClose }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const { user, userDetails } = useUser();
-  
-  // const {mutate, isLoading, error} = useMutation({
-  //   mutationKey: ['uploadProfilePic', userDetails._id],
-  //   mutationFn: (data) => axios.post('http://localhost:5000/api/users/me/profileimage', data, {headers: {
-  //     'Content-Type': 'multipart/form-data',
-  //     'Authorization': `Bearer ${user}`,
-  //     }},{withCredentials: true})
-  //     .then(res => res.data),
-  //     enabled: false,
-  //     onSuccess: (data) => {
-  //       console.log(data)
-  //     },
-  //     onMutate: () => {
-  //       console.log('mutating')
-  //     }
-  
-  //   }
-  const {mutate, isLoading, error} = useMutation({
-    mutationKey: ['uploadProfilePic', userDetails._id],
-    mutationFn: (data) => api.query(user).post(api.endpoints.uploadProfileImage, data, {withCredentials: true})
-    .then(res => res.data),
-      enabled: false,
-      onSuccess: (data) => {
-        console.log(data)
-      },
-      onMutate: () => {
-        console.log('mutating')
-      },
-      onError: (err) => {
-        console.log(err.response.data.message)
-      }
-  
-    }
-  )
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const navigate = useNavigate();
+
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    clearErrors,
+  } = useForm();
+
+  const { mutate, isLoading, error } = useMutation({
+    mutationKey: ["uploadProfilePic", userDetails._id],
+    mutationFn: (data) =>
+      api
+        .query(user)
+        .post(api.endpoints.uploadProfileImage, data, { withCredentials: true })
+        .then((res) => res.data),
+    enabled: false,
+    onSuccess: (data) => {
+      console.log(data);
+    },
+    onMutate: () => {
+      console.log("mutating");
+    },
+    onError: (err) => {
+      console.log(err.response.data.message);
+    },
+  });
+  const onSubmit = (data) => {
+    console.log(data);
     let form = new FormData();
     console.log(form);
-    form.append("image", selectedFile);
-    console.log(form);
-    mutate(form)
-
-    // axios.post('http://localhost:5000/api/users/me/profileimage', form, {headers: {
-    //   'Content-Type': 'multipart/form-data',
-    //   'Authorization': `Bearer ${user}`,
-    // }},{withCredentials: true})
-    // .then(res => console.log(res.data))
-    // .catch(err => console.log(err))
+    form.append("image", data.image[0]);
+    console.log(data.image[0].name);
+    mutate(form);
   };
-
+  if (errors?.image) {
+    toast.error(errors?.image?.message);
+    console.log(errors);
+    clearErrors("image");
+  }
   const handleChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
@@ -85,20 +79,27 @@ function ProfilePicModal({ modalState, handleClose }) {
   return (
     <Modal onClose={handleClose} open={modalState}>
       <Box
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         component={"form"}
         sx={{ ...style, borderRadius: 1 }}
       >
+        <Button
+          onClick={() => navigate("/myimages")}
+          variant="contained"
+          color="secondary"
+        >
+          My Images
+        </Button>
         <Button component="label" variant="contained">
           Upload Image
-          <Input
-            name="profilePicture"
-            onChange={handleChange}
-            type="file"
-            accept="image/*"
             sx={{
               display: "none",
             }}
+            accept="image/*"
+            {...register("image", {
+              required: "Please select an image to upload",
+            })}
+            type="file"
           />
         </Button>
         <Button type="submit" variant="contained">

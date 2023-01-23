@@ -200,6 +200,8 @@ const controller = {
   UploadSingleProfilePicture: asyncHandler(async (req, res) => {
     const file = req.files.image;
 
+    // return res.status(200).json(file)
+
     // eslint-disable-next-line no-shadow
     const uploadFromBuffer = (file) => new Promise((resolve, reject) => {
       const cldUploadStream = cloudinary.uploader.upload_stream({
@@ -217,17 +219,7 @@ const controller = {
 
     const fileUploadResult = await uploadFromBuffer(file);
 
-    // return console.log(file);
-    // const promisfyFileUpload = () => new Promise((resolve, reject) => {
-    //   file.mv(filePath, (err) => {
-    //     if (err) {
-    //       return reject(new Error('File could not be uploaded'));
-    //     }
-    //     return resolve(true);
-    //   });
-    // });
-
-    const user = await Users.findByIdAndUpdate(
+    await Users.findByIdAndUpdate(
       req.user._id,
       {
         $push: {
@@ -244,7 +236,7 @@ const controller = {
       { new: true },
     ).lean();
 
-    res.status(200).json(user);
+    res.status(200).json({ message: 'New Image uploaded' });
   }),
 };
 

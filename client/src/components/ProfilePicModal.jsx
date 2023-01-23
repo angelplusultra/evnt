@@ -9,6 +9,10 @@ import {
 } from "@mui/material";
 import { useRef } from "react";
 import { useState } from "react";
+import { api } from "../api/api";
+import { useUser } from "../context/userContext";
+import axios from 'axios'
+import { useMutation } from "@tanstack/react-query";
 
 const style = {
   position: "absolute",
@@ -22,20 +26,69 @@ const style = {
 };
 
 function ProfilePicModal({ modalState, handleClose }) {
-  const [formData, setFormData] = useState({
-    profilePicture: "",
-  });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const { user, userDetails } = useUser();
+  
+  // const {mutate, isLoading, error} = useMutation({
+  //   mutationKey: ['uploadProfilePic', userDetails._id],
+  //   mutationFn: (data) => axios.post('http://localhost:5000/api/users/me/profileimage', data, {headers: {
+  //     'Content-Type': 'multipart/form-data',
+  //     'Authorization': `Bearer ${user}`,
+  //     }},{withCredentials: true})
+  //     .then(res => res.data),
+  //     enabled: false,
+  //     onSuccess: (data) => {
+  //       console.log(data)
+  //     },
+  //     onMutate: () => {
+  //       console.log('mutating')
+  //     }
+  
+  //   }
+  const {mutate, isLoading, error} = useMutation({
+    mutationKey: ['uploadProfilePic', userDetails._id],
+    mutationFn: (data) => api.query(user).post(api.endpoints.uploadProfileImage, data, {withCredentials: true})
+    .then(res => res.data),
+      enabled: false,
+      onSuccess: (data) => {
+        console.log(data)
+      },
+      onMutate: () => {
+        console.log('mutating')
+      },
+      onError: (err) => {
+        console.log(err.response.data.message)
+      }
+  
+    }
+  )
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let form = new FormData();
+    console.log(form);
+    form.append("image", selectedFile);
+    console.log(form);
+    mutate(form)
+
+    // axios.post('http://localhost:5000/api/users/me/profileimage', form, {headers: {
+    //   'Content-Type': 'multipart/form-data',
+    //   'Authorization': `Bearer ${user}`,
+    // }},{withCredentials: true})
+    // .then(res => console.log(res.data))
+    // .catch(err => console.log(err))
+  };
 
   const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setSelectedFile(e.target.files[0]);
   };
   console.log(modalState);
   return (
     <Modal onClose={handleClose} open={modalState}>
-      <Box component={"form"} sx={{ ...style, borderRadius: 1 }}>
+      <Box
+        onSubmit={handleSubmit}
+        component={"form"}
+        sx={{ ...style, borderRadius: 1 }}
+      >
         <Button component="label" variant="contained">
           Upload Image
           <Input
@@ -48,7 +101,7 @@ function ProfilePicModal({ modalState, handleClose }) {
             }}
           />
         </Button>
-        <Button onClick={() => console.log(formData)} variant="contained">
+        <Button type="submit" variant="contained">
           Submit
         </Button>
       </Box>

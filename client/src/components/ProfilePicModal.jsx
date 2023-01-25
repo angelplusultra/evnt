@@ -33,7 +33,6 @@ function ProfilePicModal({ modalState, handleClose }) {
   const { user, userDetails } = useUser();
   const navigate = useNavigate();
 
-
   const {
     register,
     handleSubmit,
@@ -59,6 +58,26 @@ function ProfilePicModal({ modalState, handleClose }) {
       console.log(err.response.data.message);
     },
   });
+
+  const isValidFile = (image) => {
+    if (image) {
+      if (image[0].size > 1024 * 1024) {
+        toast.error("File size too large");
+        return false;
+      }
+      switch (image[0].type) {
+        case "image/jpeg":
+          return true;
+        case "image/png":
+          return true;
+        case "image/jpg":
+          return true;
+        default:
+          toast.error("File format not supported");
+          return false;
+      }
+    }
+  };
   const onSubmit = (data) => {
     console.log(data);
     let form = new FormData();
@@ -67,7 +86,7 @@ function ProfilePicModal({ modalState, handleClose }) {
     console.log(data.image[0].name);
     mutate(form);
   };
-  if (errors?.image) {
+  if (errors?.image?.message) {
     toast.error(errors?.image?.message);
     console.log(errors);
     clearErrors("image");
@@ -92,12 +111,14 @@ function ProfilePicModal({ modalState, handleClose }) {
         </Button>
         <Button component="label" variant="contained">
           Upload Image
+          <Input
             sx={{
               display: "none",
             }}
             accept="image/*"
             {...register("image", {
               required: "Please select an image to upload",
+              validate: isValidFile,
             })}
             type="file"
           />

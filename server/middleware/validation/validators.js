@@ -84,6 +84,10 @@ const validators = {
       res.status(400);
       return next(new Error('No image uploaded'));
     }
+	  if (!req.body.setProfile){
+		  res.status(400)
+		  return next(new Error(' Request body needs to include a "setProfile" property containing boolean'))
+	  }
     if (!req.files.image) {
       res.status(400);
       return next(new Error('Uploaded image must contain a key called "image"'));

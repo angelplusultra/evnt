@@ -16,6 +16,7 @@ router.post(
   validators.validateProfileImage,
   userCont.UploadSingleProfilePicture,
 );
+router.put('/me/profileimage/:id', userCont.ChangeProfileImage)
 
 router.get('/activity', userCont.GetActivity);
 
@@ -26,3 +27,6 @@ router.route('/followers')
 router.route('/:id').put(userCont.FollowUser).get(userCont.GetSingleUser);
 
 export default router;
+
+
+

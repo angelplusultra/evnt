@@ -28,7 +28,9 @@ function ProfilePage() {
   const handleClose = () => setModalOpen(false)
   //data is stale when
 
-  //? keep an eye on this
+
+
+	//keep an eye on this
   useEffect(() => {
     if (location.pathname !== "/profile") return console.log("not refetching");
 
@@ -38,7 +40,7 @@ function ProfilePage() {
   // Other user data
 
   if (isRefetching) return <Typography>Loading...</Typography>;
-
+	/* -----RENDER FOR OUTER USER PROFILE-------*/
   if (id) {
     if (id === userDetails._id) return <Navigate to="/profile" replace />;
     return (
@@ -63,11 +65,10 @@ function ProfilePage() {
           ? userData.userData.followers.map((user, i) => (
               <User key={i} userId={user} />
             ))
-          : "No Followers :("}
-      </Container>
-    );
+          : "No Followers :("} </Container>);
   }
-  // User Render
+console.log(userDetails)
+	/* -----User Render----- */
   return (
     <Container
       sx={{
@@ -76,6 +77,7 @@ function ProfilePage() {
         flexDirection: "column",
       }}
     >
+
       <Box alignItems={'center'} justifyContent={'space-between'} display={"flex"}>
         <IconButton onClick={handleOpen}>
           <Avatar>{userDetails?.username.charAt(0)}</Avatar>

@@ -65,7 +65,9 @@ const userSchema = new mongoose.Schema(
         type: [{
           imagePath: String,
           cloudinaryId: String,
+		  selectedProfile: Boolean,
         }],
+
       },
     },
     activity: {

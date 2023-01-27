@@ -26,6 +26,10 @@ app.use(cors({
   credentials: true,
 }));
 
+
+
+
+
 connectDb();
 
 app.use(express.json());

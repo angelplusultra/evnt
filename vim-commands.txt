@@ -21,10 +21,14 @@ Smoothe Scroll
 C-D = go down
 C-U =go up
 
+Git 
+\gh = gitgutter highlights
+\gs = Gdiffsplit
 
 Git
 Git blame
 Gitdiff
+
 
 Other Commands
 

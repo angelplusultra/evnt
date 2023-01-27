@@ -33,7 +33,7 @@ const style = {
 
 function ProfilePicModal({ modalState, handleClose }) {
   const [selectedFile, setSelectedFile] = useState(null);
-  const { user, userDetails } = useUser();
+  const { user, userDetails, refetch } = useUser();
   const navigate = useNavigate();
 
   const {
@@ -43,7 +43,7 @@ function ProfilePicModal({ modalState, handleClose }) {
     clearErrors,
   } = useForm();
 
-  const { mutate, isLoading, error } = useMutation({
+  const { mutate, status, error } = useMutation({
     mutationKey: ["uploadProfilePic", userDetails._id],
     mutationFn: (data) =>
       api
@@ -51,15 +51,6 @@ function ProfilePicModal({ modalState, handleClose }) {
         .post(api.endpoints.uploadProfileImage, data, { withCredentials: true })
         .then((res) => res.data),
     enabled: false,
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onMutate: () => {
-      console.log("mutating");
-    },
-    onError: (err) => {
-      console.log(err.response.data.message);
-    },
   });
 
   const isValidFile = (image) => {
@@ -81,7 +72,9 @@ function ProfilePicModal({ modalState, handleClose }) {
       }
     }
   };
- const onSubmit = (data) => {
+  const onSubmit = (data) => {
+	handleClose()
+	const toastId = toast.loading("Uploading image");
     console.log(data);
     let form = new FormData();
     console.log(form);
@@ -89,16 +82,23 @@ function ProfilePicModal({ modalState, handleClose }) {
     form.append("setProfile", data.setProfile);
 
     console.log(data.setProfile);
-    mutate(form);
+    mutate(form, {
+      onSuccess: () => {
+        refetch();
+        toast.update(toastId, {
+          render: "Image uploaded 👍",
+          type: "success",
+          isLoading: false,
+          autoClose: 4000,
+        });
+      },
+    });
   };
   if (errors?.image?.message) {
     toast.error(errors?.image?.message);
     console.log(errors);
     clearErrors("image");
   }
-  const handleChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
   console.log(modalState);
   return (
     <Modal onClose={handleClose} open={modalState}>

@@ -68,10 +68,20 @@ function ProfilePage() {
           : "No Followers :("} </Container>);
   }
 console.log(userDetails)
+	const profileImage = userDetails
+		.images
+		.profileImages
+		.find(image => image.selectedProfile === true)
+
+
+
 	/* -----User Render----- */
   return (
     <Container
-      sx={{
+	
+	sx={{
+		height: '100vh',
+		bgcolor: ' grey',
         display: "flex",
         alignItems: "center",
         flexDirection: "column",
@@ -80,7 +90,7 @@ console.log(userDetails)
 
       <Box alignItems={'center'} justifyContent={'space-between'} display={"flex"}>
         <IconButton onClick={handleOpen}>
-          <Avatar>{userDetails?.username.charAt(0)}</Avatar>
+          <Avatar src={profileImage.imagePath}></Avatar>
         </IconButton>
 
         <Typography variant="h4">{userDetails.username}</Typography>

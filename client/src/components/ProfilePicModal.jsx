@@ -16,6 +16,9 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import Checkbox from "@mui/material/Checkbox";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import { ErrorMessage } from "@hookform/error-message";
 const style = {
   position: "absolute",
@@ -78,12 +81,14 @@ function ProfilePicModal({ modalState, handleClose }) {
       }
     }
   };
-  const onSubmit = (data) => {
+ const onSubmit = (data) => {
     console.log(data);
     let form = new FormData();
     console.log(form);
     form.append("image", data.image[0]);
-    console.log(data.image[0].name);
+    form.append("setProfile", data.setProfile);
+
+    console.log(data.setProfile);
     mutate(form);
   };
   if (errors?.image?.message) {
@@ -102,6 +107,12 @@ function ProfilePicModal({ modalState, handleClose }) {
         component={"form"}
         sx={{ ...style, borderRadius: 1 }}
       >
+        <FormGroup>
+          <FormControlLabel
+            control={<Checkbox {...register("setProfile")} />}
+            label="Change to current profile?"
+          />
+        </FormGroup>
         <Button
           onClick={() => navigate("/myimages")}
           variant="contained"

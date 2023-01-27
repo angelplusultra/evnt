@@ -173,6 +173,7 @@ const controller = {
     // sort following by most recent createdAt
 
     user.activity.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
     res.json(user);
   }),
 
@@ -276,7 +277,7 @@ const controller = {
     }
 
     // validate user is the owner of the image
-    const user = await Users.findById(_id).select('-password');
+    const user = await Users.findById(_id).select("-password");
 
     if (!user) {
       res.status(400);
@@ -288,30 +289,40 @@ const controller = {
 
     if (!imageExists) {
       res.status(400);
-      throw new Error("Sorry, this image does not exist");
+      throw new Error("Sorry, this image no longer exists");
     }
     // revert users current profile picture to false
     const currentProfile = user.images.profileImages.find(
       (image) => image.selectedProfile === true
     );
-	  if(!currentProfile){
-		imageExists.selectedProfile = true
-		  await user.save()
-		  return res.status(200).json({user, status: 'success', msg: 'You have updated your profile picture'})
-	  }
-	  if(currentProfile._id.toString() === id){
-		  res.status(400)
-		  throw new Error('Image already set to profile picture')
-
-	  }
+    if (!currentProfile) {
+      imageExists.selectedProfile = true;
+      await user.save();
+      return res
+        .status(200)
+        .json({
+          user,
+          status: "success",
+          msg: "You have updated your profile picture",
+        });
+    }
+    if (currentProfile._id.toString() === id) {
+      res.status(400);
+      throw new Error("Image already set to profile picture");
+    }
     currentProfile.selectedProfile = false;
     // set the selected profile image
-    imageExists.selectedProfile = true
-	  
+    imageExists.selectedProfile = true;
 
     await user.save();
 
-    res.status(200).json({ user, status: 'success', msg: 'You have changed your profile image' });
+    res
+      .status(200)
+      .json({
+        user,
+        status: "success",
+        message: "You have changed your profile image",
+      });
   }),
 };
 

@@ -1,0 +1,34 @@
+COC
+
+C-k = reveal definition
+gd = go to definition
+C-o return from definition
+
+
+NERDTree
+
+alt-f =toggle tree
+m = reveal node commands
+
+
+
+Telescope
+\ff = search files
+\tt = reveal tabs
+
+
+Smoothe Scroll
+C-D = go down
+C-U =go up
+
+
+Git
+Git blame
+Gitdiff
+
+Other Commands
+
+C-W to jump between panes
+A-Up||Down to shift a line or lines
+C-L||R to jump tabs
+

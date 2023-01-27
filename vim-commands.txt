@@ -31,4 +31,5 @@ Other Commands
 C-W to jump between panes
 A-Up||Down to shift a line or lines
 C-L||R to jump tabs
-
+"+y copy to system clipboard ghp_pEWLNI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YUemdZBdKy1SDbN5TPwUehRI0GWDaS
+gghp_pEWLNIYUem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dZBdKy1SDbN5TPwUehRI0GWDaShp_pEWLNIYUemdZBdKy1SDbN5TPwUehRI0GWDaS

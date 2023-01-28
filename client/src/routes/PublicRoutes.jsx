@@ -13,21 +13,27 @@ import ProfilePage from "../pages/Profile";
 import ValidateUser from "../components/validation/ValidateUser";
 import Gallery from "../pages/Gallery/Gallery";
 
-
 const PublicRoutes = () => {
   return (
     <>
       <nav>
-        <Link to='/profile'>Profile</Link>
-        <Link to='/dashboard'>Dashboard</Link>
+        <Link to="/profile">Profile</Link>
+        <Link to="/dashboard">Dashboard</Link>
       </nav>
       <Routes>
+        //* -----Public Routes------
         <Route index element={<Landing />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<SignUpMUI />} />
+        // ------End of Public Routes--------- 
+		
+		// --------ProtectedRoutes-----------
         <Route element={<Protect />}>
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="profile" element={<ProfilePage />} />
+          <Route path="profile">
+            <Route index element={<ProfilePage />} />
+            <Route path="gallery" element={<Gallery />} />
+          </Route>
           <Route path="events">
             <Route index element={<Navigate to="/dashboard" />} />
             <Route path="create" element={<CreateEvent />} />
@@ -36,17 +42,20 @@ const PublicRoutes = () => {
           <Route path="users">
             <Route index element={<Navigate to="/dashboard" />} />
             <Route element={<ValidateUser />}>
-              <Route path=':id' element={<ProfilePage />} />
-			  <Route path=':id/gallery' element={<Gallery />} />
+              <Route path=":id">
+                <Route index element={<ProfilePage />} />
+                <Route path="gallery" element={<Gallery />} />
+              </Route>
             </Route>
           </Route>
           <Route path="profile" element={<>Profile Page</>} />
           <Route path="settings" element={<>Settings</>} />
         </Route>
+        // ----End of Protected Routes-----
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
       <ReactQueryDevtools initialIsOpen={false} />
- </>   
+    </>
   );
 };
 

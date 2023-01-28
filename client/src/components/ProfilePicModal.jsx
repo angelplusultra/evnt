@@ -114,7 +114,7 @@ function ProfilePicModal({ modalState, handleClose }) {
           />
         </FormGroup>
         <Button
-          onClick={() => navigate("/myimages")}
+          onClick={() => navigate("gallery")}
           variant="contained"
           color="secondary"
         >

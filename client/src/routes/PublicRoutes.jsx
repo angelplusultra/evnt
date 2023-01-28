@@ -11,6 +11,7 @@ import EventPage from "../pages/EventPage";
 import CreateEvent from "../pages/CreateEvent";
 import ProfilePage from "../pages/Profile";
 import ValidateUser from "../components/validation/ValidateUser";
+import Gallery from "../pages/Gallery/Gallery";
 
 
 const PublicRoutes = () => {
@@ -36,6 +37,7 @@ const PublicRoutes = () => {
             <Route index element={<Navigate to="/dashboard" />} />
             <Route element={<ValidateUser />}>
               <Route path=':id' element={<ProfilePage />} />
+			  <Route path=':id/gallery' element={<Gallery />} />
             </Route>
           </Route>
           <Route path="profile" element={<>Profile Page</>} />

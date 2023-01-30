@@ -43,29 +43,59 @@ function ProfilePage() {
 	/* -----RENDER FOR OUTER USER PROFILE-------*/
   if (id) {
     if (id === userDetails._id) return <Navigate to="/profile" replace />;
-    return (
-      <Container>
-        <Typography variant="h4">{userData.userData.username}</Typography>
-        <Typography variant="h3">
-          {userData.userData.attendingEvents.map((event) => (
-            <EventCard id={event.event} key={event._id} />
-          ))}
-        </Typography>
-        <Typography variant="h3">Hosting Events</Typography>
-        {userData.userData.createdEvents.map((event) => (
-          <EventCard key={event._id} id={event} />
-        ))}
-        <Typography>Following</Typography>
-        {userData.userData.following.map((user, i) => (
-          <User key={i} userId={user} />
-        ))}
 
-        <Typography>Followers</Typography>
-        {userData.userData.followers.length > 0
-          ? userData.userData.followers.map((user, i) => (
-              <User key={i} userId={user} />
-            ))
-          : "No Followers :("} </Container>);
+    const outerUserProfileImage = userData.userData.images.profileImages.find(image  => image.selectedProfile === true)
+
+    return (     
+    <Container
+	
+	sx={{
+		height: '100vh',
+		bgcolor: ' grey',
+        display: "flex",
+        alignItems: "center",
+        flexDirection: "column",
+      }}
+    >
+
+      <Box alignItems={'center'} justifyContent={'space-between'} display={"flex"}>
+        <IconButton onClick={handleOpen}>
+          <Avatar src={outerUserProfileImage}>
+            {userData.userData.username[0].toUpperCase()}
+          </Avatar>
+        </IconButton>
+
+        <Typography variant="h4">{userData.username}</Typography>
+      </Box>
+
+      <Typography variant="h4">Attending Events</Typography>
+      <Box display={"flex"} gap={2}>
+        {userData?.userData.attendingEvents?.map((event) => (
+          <EventCard id={event.event} key={event._id} />
+        ))}
+      </Box>
+      <Typography variant="h4">Hosting Events</Typography>
+      <Box display={"flex"} gap={2}>
+        {" "}
+        {userData?.userData.createdEvents.map((event) => (
+          <EventCard id={event} />
+        ))}
+      </Box>
+      <Typography variant="h5">Following</Typography>
+      {userData?.userData.following.map((user, i) => (
+        <User key={i} userId={user} />
+      ))}
+      <Typography variant="h5">Followers</Typography>
+      {userData?.userData.followers.length > 0
+        ? userData.followers.map((user, i) => <User key={i} userId={user} />)
+        : "No Followers :("}
+      <Typography variant="h5">Locations</Typography>
+      <Typography variant="h6">
+        {userData?.userData.locationTracking.map((county) => county)}
+      </Typography>
+      <ProfilePicModal handleClose={handleClose} handleOpen={handleOpen} modalState={modalOpen} />
+    </Container>
+           );
   }
 console.log(userDetails)
 	const profileImage = userDetails
@@ -93,7 +123,7 @@ console.log(userDetails)
           <Avatar src={profileImage.imagePath}></Avatar>
         </IconButton>
 
-        <Typography variant="h4">{userDetails.username}</Typography>
+        <Typography variant="h4">{"fuc"}</Typography>
       </Box>
 
       <Typography variant="h4">Attending Events</Typography>

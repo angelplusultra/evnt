@@ -12,7 +12,8 @@ const endpoints = {
   markAttendance: "/api/events/",
   getMe: '/api/users/me',
   deleteAttendance: '/api/events/',
-  uploadProfileImage: '/api/users/me/profileimage'
+  uploadProfileImage: '/api/users/me/profileimage',
+  updateProfileImage: '/api/users/me/profileimage/'
 };
 
 export const api = {

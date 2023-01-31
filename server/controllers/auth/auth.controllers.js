@@ -1,191 +1,160 @@
 /* eslint-disable import/extensions */
-import asyncHandler from 'express-async-handler';
-import nodemailer from 'nodemailer';
-import jwt from 'jsonwebtoken';
-import hbs from 'nodemailer-express-handlebars';
-import path from 'path';
-import mongoose from 'mongoose';
-import helpers from '../../helpers/helpers.js';
-import Users from '../../models/Users.js';
+import asyncHandler from "express-async-handler";
+import nodemailer from "nodemailer";
+import jwt from "jsonwebtoken";
+import path from "path";
+import mongoose from "mongoose";
+import helpers from "../../helpers/helpers.js";
+import Users from "../../models/Users.js";
 
 const controller = {
-  // * @desc Create a new User
-  // * @route POST /auth/signup
-  // * @access PUBLIC
-  SignUp: asyncHandler(async (req, res) => {
-    const {
-      email,
-      username,
-      password,
-      password2,
-      isArtist,
-      areaCode,
-      locationTracking,
-    } = req.body;
+ // * @desc Create a new User
+ // * @route POST /auth/signup
+ // * @access PUBLIC
+ SignUp: asyncHandler(async (req, res) => {
+  const {
+   email,
+   username,
+   password,
+   password2,
+   isArtist,
+   artistName,
+   areaCode,
+   locationTracking,
+  } = req.body;
 
-    helpers.signUpDataValidation(
-      username,
-      email,
-      password,
-      password2,
-      areaCode,
-      res,
-    );
+  helpers.signUpDataValidation(
+   username,
+   email,
+   password,
+   password2,
+   areaCode,
+   res
+  );
 
-    const takenEmail = await Users.findOne({ email });
+  const takenEmail = await Users.findOne({ email });
 
-    if (takenEmail) {
-      res.status(400);
-      throw new Error('User already exists with that email');
-    }
+  if (takenEmail) {
+   res.status(400);
+   throw new Error("User already exists with that email");
+  }
 
-    const takenUsername = await Users.findOne({ username });
+  const takenUsername = await Users.findOne({ username });
 
-    if (takenUsername) {
-      res.status(400);
-      throw new Error('Username already taken');
-    }
+  if (takenUsername) {
+   res.status(400);
+   throw new Error("Username already taken");
+  }
 
-    const hash = await helpers.hashPassword(password, res);
-    // eslint-disable-next-line max-len
-    const userID = new mongoose.Types.ObjectId();
-    const newUser = new Users({
-      _id: userID,
-      username,
-      email,
-      password: hash,
-      isArtist,
-      areaCode,
-      locationTracking,
-      activity: [{ activityDetails: `${userID} joined Evnt!`, user: userID }],
-    });
+  const hash = await helpers.hashPassword(password, res);
+  // eslint-disable-next-line max-len
+  const userID = new mongoose.Types.ObjectId();
+  const newUser = new Users({
+   _id: userID,
+   username,
+   email,
+   password: hash,
+   isArtist,
+   areaCode,
+   locationTracking,
+   activity: [{ activityDetails: `${userID} joined Evnt!`, user: userID }],
+  });
 
-    const savedUser = await newUser.save();
+  if (isArtist) {
+   if (!artistName) {
+    res.status(400);
+    throw new Error("Artist name is required when signing up as an artist");
+   }
+   newUser.artistName = artistName;
+  }
+  const savedUser = await newUser.save();
 
-    if (!savedUser) {
-      res.status(400);
-      throw new Error('User could not be created');
-    }
+  if (!savedUser) {
+   res.status(400);
+   throw new Error("User could not be created");
+  }
 
-    savedUser.password = undefined;
+  savedUser.password = undefined;
 
-    // eslint-disable-next-line no-underscore-dangle
-    const verifyToken = helpers.genToken(savedUser._id);
+  // eslint-disable-next-line no-underscore-dangle
+  const verifyToken = helpers.genToken(savedUser._id);
 
-    if (!verifyToken) {
-      res.status(400);
-      throw new Error('Email verification token could not be created');
-    }
+  if (!verifyToken) {
+   res.status(400);
+   throw new Error("Email verification token could not be created");
+  }
+  const mail = await helpers.genEmail({ username, email, res, verifyToken });
 
-    const { NODE_ENV } = process.env;
+  res.status(200).json({
+   message:
+    "You have successfully signed up. Please check your email to verify your account",
+  });
+ }),
 
-    const transporter = nodemailer.createTransport({
-      service: NODE_ENV === 'prod' ? 'gmail' : 'mailtrap',
-      auth: {
-        user: NODE_ENV === 'prod' ? 'evntweb@gmail.com' : '917368b2a7fa16',
-        pass:
-          NODE_ENV === 'prod' ? process.env.EMAIL_PASSWORD : 'a843cfe71f62ee',
-      },
-    });
+ // * @desc Validate form, Authenticate user and send token
+ // * @route POST /auth/login
+ // * @access PUBLIC
+ Login: asyncHandler(async (req, res) => {
+  const { emailOrUsername, password } = req.body;
 
-    const handlebarOptions = {
-      viewEngine: {
-        extName: '.handlebars',
-        partialsDir: path.resolve('./views'),
-        defaultLayout: false,
-      },
-      viewPath: path.resolve('./views/email'),
-    };
+  const user = await Users.findOne({
+   $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+  });
 
-    transporter.use('compile', hbs(handlebarOptions));
+  if (!user) {
+   res.status(400);
+   throw new Error("User does not exist");
+  }
 
-    const msg = {
-      from: '"Evnt" <eventweb@gmail.com>',
-      to: `${email}`,
-      subject: 'Please verify account',
-      template: 'email',
-      context: {
-        url: `http://localhost:5000/auth/verify/${verifyToken}`,
-        user: username,
-      },
-    };
+  await helpers.comparePassword(password, user.password, res);
 
-    const mail = await transporter.sendMail(msg);
-    // ! Later on, make it so the user can resend the email if they didn't get it
-    if (!mail) {
-      res.status(400);
-      throw new Error('Email could not be sent');
-    }
-    res.status(200).json({
-      message:
-        'You have successfully signed up. Please check your email to verify your account',
-    });
-  }),
+  // eslint-disable-next-line no-underscore-dangle
+  const token = helpers.genToken(user._id);
 
-  // * @desc Validate form, Authenticate user and send token
-  // * @route POST /auth/login
-  // * @access PUBLIC
-  Login: asyncHandler(async (req, res) => {
-    const { emailOrUsername, password } = req.body;
+  res.status(200).json({
+   // eslint-disable-next-line no-underscore-dangle
+   _id: user._id,
+   username: user.username,
+   email: user.email,
+   isArtist: user.isArtist,
+   areaCode: user.areaCode,
+   token,
+  });
+ }),
+ VerifyAccount: asyncHandler(async (req, res) => {
+  const { token } = req.params;
 
-    const user = await Users.findOne({
-      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
-    });
+  const decoded = jwt.verify(token, process.env.JWT_EMAIL_SECRET);
 
-    if (!user) {
-      res.status(400);
-      throw new Error('User does not exist');
-    }
+  const user = await Users.findById(decoded.id).lean();
 
-    await helpers.comparePassword(password, user.password, res);
+  if (!user) {
+   res.status(400);
+   throw new Error("User does not exist");
+  }
 
-    // eslint-disable-next-line no-underscore-dangle
-    const token = helpers.genToken(user._id);
+  if (user.isVerified) {
+   res.status(400);
+   throw new Error("User is already verified");
+  }
 
-    res.status(200).json({
-      // eslint-disable-next-line no-underscore-dangle
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-      isArtist: user.isArtist,
-      areaCode: user.areaCode,
-      token,
-    });
-  }),
-  VerifyAccount: asyncHandler(async (req, res) => {
-    const { token } = req.params;
+  const updatedUser = await Users.findByIdAndUpdate(
+   decoded.id,
+   { isVerified: true },
+   { new: true }
+  );
 
-    const decoded = jwt.verify(token, process.env.JWT_EMAIL_SECRET);
+  if (!updatedUser) {
+   res.status(400);
+   throw new Error("User could not be verified");
+  }
 
-    const user = await Users.findById(decoded.id).lean();
+  updatedUser.password = undefined;
 
-    if (!user) {
-      res.status(400);
-      throw new Error('User does not exist');
-    }
-
-    if (user.isVerified) {
-      res.status(400);
-      throw new Error('User is already verified');
-    }
-
-    const updatedUser = await Users.findByIdAndUpdate(
-      decoded.id,
-      { isVerified: true },
-      { new: true },
-    );
-
-    if (!updatedUser) {
-      res.status(400);
-      throw new Error('User could not be verified');
-    }
-
-    updatedUser.password = undefined;
-
-    res
-      .status(200)
-      .json({ message: 'User verified successfully', user: updatedUser });
-  }),
+  res
+   .status(200)
+   .json({ message: "User verified successfully", user: updatedUser });
+ }),
 };
 
 export default controller;

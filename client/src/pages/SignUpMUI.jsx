@@ -85,6 +85,10 @@ const { user } = useContext(UserContext);
   async function onSubmit(data) {
     setLoading(true);
     console.log(data);
+   const payload = {
+    ...data,
+    isArtist: true
+   }
     const id = toast.loading("Signing up...");
 
     // validate the form data
@@ -95,9 +99,8 @@ const { user } = useContext(UserContext);
         method: "post",
         url: `${domain}${endpoints.signUp}`,
         data: {
-          ...data,
+          ...payload,
           areaCode: "12345",
-          isArtist: false,
         },
         withCredentials: true,
       });
@@ -280,7 +283,7 @@ const { user } = useContext(UserContext);
               </Button>
               <Grid container>
                 <Grid item xs>
-                  <NavLink to="/registerartist">
+                  <NavLink to="/signup/artist">
                     {"Looking to Sign Up as an Artist"}
                   </NavLink>
                 </Grid>

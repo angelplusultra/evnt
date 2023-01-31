@@ -59,7 +59,7 @@ function ProfilePage() {
     >
 
       <Box alignItems={'center'} justifyContent={'space-between'} display={"flex"}>
-        <IconButton onClick={handleOpen}>
+        <IconButton >
           <Avatar src={outerUserProfileImage}>
             {userData.userData.username[0].toUpperCase()}
           </Avatar>
@@ -123,7 +123,7 @@ console.log(userDetails)
           <Avatar src={profileImage.imagePath}></Avatar>
         </IconButton>
 
-        <Typography variant="h4">{"fuc"}</Typography>
+        <Typography variant="h4">{userDetails.username}</Typography>
       </Box>
 
       <Typography variant="h4">Attending Events</Typography>

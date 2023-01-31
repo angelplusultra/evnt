@@ -26,6 +26,9 @@ const userSchema = new mongoose.Schema(
       default: false,
       immutable: true,
     },
+   artistName: {
+    type: String,
+   },
     //! Location tracking to be used later, for now, users are
     //! created and get events based on a single area code they provide
     locationTracking: {

@@ -15,7 +15,7 @@
 
 
 ---Todo---
-
+---REMEMBER TO REFACTOR AUTHENTICATION CONTROLLER ANMD ABTRACT LOGIC FOR ARTIST REGISTRATION!!!!------
 -incorporate artists accounts
 -event makers shoiuld be able to flag their event for open slots and users with artist accounts who are int heir location and or follow them should be able to see it.
 

@@ -1,10 +1,9 @@
 /* eslint-disable import/extensions */
 import asyncHandler from "express-async-handler";
-import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
-import path from "path";
 import mongoose from "mongoose";
 import helpers from "../../helpers/helpers.js";
+import Artists from "../../models/Artists.js";
 import Users from "../../models/Users.js";
 
 const controller = {
@@ -12,16 +11,8 @@ const controller = {
  // * @route POST /auth/signup
  // * @access PUBLIC
  SignUp: asyncHandler(async (req, res) => {
-  const {
-   email,
-   username,
-   password,
-   password2,
-   isArtist,
-   artistName,
-   areaCode,
-   locationTracking,
-  } = req.body;
+  const { email, username, password, password2, areaCode, locationTracking } =
+   req.body;
 
   helpers.signUpDataValidation(
    username,
@@ -32,41 +23,31 @@ const controller = {
    res
   );
 
-  const takenEmail = await Users.findOne({ email });
-
-  if (takenEmail) {
+  if ((await Users.findOne({ email })) || (await Artists.findOne({ email }))) {
    res.status(400);
-   throw new Error("User already exists with that email");
+   throw new Error("Email not available");
   }
-
-  const takenUsername = await Users.findOne({ username });
-
-  if (takenUsername) {
+  if (
+   (await Users.findOne({ username })) ||
+   (await Artists.findOne({ username }))
+  ) {
    res.status(400);
-   throw new Error("Username already taken");
+   throw new Error("Username not available");
   }
 
   const hash = await helpers.hashPassword(password, res);
-  // eslint-disable-next-line max-len
+
   const userID = new mongoose.Types.ObjectId();
   const newUser = new Users({
-   _id: userID,
    username,
    email,
    password: hash,
-   isArtist,
+   isArtist: false,
    areaCode,
    locationTracking,
    activity: [{ activityDetails: `${userID} joined Evnt!`, user: userID }],
   });
 
-  if (isArtist) {
-   if (!artistName) {
-    res.status(400);
-    throw new Error("Artist name is required when signing up as an artist");
-   }
-   newUser.artistName = artistName;
-  }
   const savedUser = await newUser.save();
 
   if (!savedUser) {
@@ -83,7 +64,74 @@ const controller = {
    res.status(400);
    throw new Error("Email verification token could not be created");
   }
-  const mail = await helpers.genEmail({ username, email, res, verifyToken });
+  await helpers.genEmail({ username, email, res, verifyToken });
+
+  res.status(200).json({
+   message:
+    "You have successfully signed up. Please check your email to verify your account",
+  });
+ }),
+ ArtistSignUp: asyncHandler(async (req, res) => {
+  // REFACTOR AUTHENTIOCATION FOR USERS & ARTISTS, USERNAMES AND EMAILS MUST BE UNQIUE TO BOTH ENDS
+  const {
+   email,
+   username,
+   password,
+   password2,
+   artistName,
+   areaCode,
+   locationTracking,
+  } = req.body;
+  // !!refactor this as middleware
+  helpers.signUpDataValidation(
+   username,
+   email,
+   password,
+   password2,
+   areaCode,
+   res
+  );
+
+  if ((await Artists.findOne({ email })) || (await Users.findOne({ email }))) {
+   res.status(400);
+   throw new Error("Email not available");
+  }
+  if (
+   (await Artists.findOne({ username })) ||
+   (await Users.findOne({ username }))
+  ) {
+   res.status(400);
+   throw new Error("Username not available");
+  }
+
+  const hash = await helpers.hashPassword(password, res);
+  // eslint-disable-next-line max-len
+  const userID = new mongoose.Types.ObjectId();
+
+  const newArtist = new Artists({
+   _id: userID,
+   username,
+   email,
+   password: hash,
+   isArtist: true,
+   areaCode,
+   locationTracking,
+   artistName,
+   activity: [{ activityDetails: `${userID} joined Evnt!`, user: userID }],
+  });
+  const savedArtist = await newArtist.save();
+
+  if (!savedArtist) {
+   res.status(500);
+   throw new Error("Something went wrong with registration");
+  }
+  const verifyToken = helpers.genToken(savedArtist._id);
+
+  if (!verifyToken) {
+   res.status(400);
+   throw new Error("Email verification token could not be created");
+  }
+  await helpers.genEmail({ username, email, res, verifyToken });
 
   res.status(200).json({
    message:
@@ -101,44 +149,53 @@ const controller = {
    $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
   });
 
-  if (!user) {
+  const artist = await Artists.findOne({
+   $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+  });
+
+  if (!user && !artist) {
    res.status(400);
    throw new Error("User does not exist");
   }
-
-  await helpers.comparePassword(password, user.password, res);
+  await helpers.comparePassword(
+   password,
+   user ? user.password : artist.password,
+   res
+  );
 
   // eslint-disable-next-line no-underscore-dangle
-  const token = helpers.genToken(user._id);
+  const token = helpers.genToken(user ? user._id : artist._id);
+
+  if (user) {
+   user.password = undefined;
+  } else {
+   artist.password = undefined;
+  }
 
   res.status(200).json({
-   // eslint-disable-next-line no-underscore-dangle
-   _id: user._id,
-   username: user.username,
-   email: user.email,
-   isArtist: user.isArtist,
-   areaCode: user.areaCode,
    token,
+   ...(user && { user: user }),
+   ...(artist && { artist: artist }),
   });
  }),
+
  VerifyAccount: asyncHandler(async (req, res) => {
   const { token } = req.params;
 
   const decoded = jwt.verify(token, process.env.JWT_EMAIL_SECRET);
-
-  const user = await Users.findById(decoded.id).lean();
-
-  if (!user) {
+  const genUser = await Users.findById(decoded.id).lean();
+  const artist = await Artists.findById(decoded.id).lean();
+  if (!genUser && !artist) {
    res.status(400);
    throw new Error("User does not exist");
   }
 
-  if (user.isVerified) {
+  if ((genUser ? genUser : artist).isVerified) {
    res.status(400);
-   throw new Error("User is already verified");
+   throw new Error("You are already verified");
   }
 
-  const updatedUser = await Users.findByIdAndUpdate(
+  const updatedUser = await (genUser ? Users : Artists).findByIdAndUpdate(
    decoded.id,
    { isVerified: true },
    { new: true }

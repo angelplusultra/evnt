@@ -37,3 +37,67 @@ A-Up||Down to shift a line or lines
 C-L||R to jump tabs
 "+y copy to system clipboard ghp_pEWLNI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YUemdZBdKy1SDbN5TPwUehRI0GWDaS
 gghp_pEWLNIYUem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dZBdKy1SDbN5TPwUehRI0GWDaShp_pEWLNIYUemdZBdKy1SDbN5TPwUehRI0GWDaS
+
+
+Place cursor at name to rename and type
+
+gd (or gD if you're renaming a global variable).
+
+gd         Goto local Declaration.  When the cursor is on a local
+            variable, this command will jump to its declaration.
+            First Vim searches for the start of the current
+            function, just like "[[".  If it is not found the
+            search stops in line 1.  If it is found, Vim goes back
+            until a blank line is found.  From this position Vim
+            searches for the keyword under the cursor, like with
+            "*", but lines that look like a comment are ignored
+            (see 'comments' option).
+            Note that this is not guaranteed to work, Vim does not
+            really check the syntax, it only searches for a match
+            with the keyword.  If included files also need to be
+            searched use the commands listed in |include-search|.
+            After this command |n| searches forward for the next
+            match (not backward).
+            {not in Vi}
+
+gD          Goto global Declaration.  When the cursor is on a
+            global variable that is defined in the file, this
+            command will jump to its declaration.  This works just
+            like "gd", except that the search for the keyword
+            always starts in line 1.  {not in Vi}
+
+Then
+
+c (change) + gn new_name esc
+
+gn         Search forward for the last used search pattern, like
+            with `n`, and start Visual mode to select the match.
+            If the cursor is on the match, visually selects it.
+            If an operator is pending, operates on the match.
+            E.g., "dgn" deletes the text of the next match.
+            If Visual mode is active, extends the selection
+            until the end of the next match.
+
+and
+
+. (repeat) one or more times to rename next occurrence(s)
+
+or
+
+:%norm . to rename all occurrences in the buffer at once.
+
+
+
+https://www.reddit.com/r/vim/comments/1zvks1/best_way_to_rename_variable_in_several_spots_in_a/
+
+
+I usually just do * on the word I want to replace which places it in the search buffer("/), then I ether do:
+
+:%s//new_name/g
+
+or visually select the space in which I want to replace the name and do:
+
+:s//new_name/g
+
+Many people don't know that regex substitution combines well with visual mode.
+16

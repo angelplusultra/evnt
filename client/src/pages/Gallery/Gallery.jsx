@@ -37,16 +37,11 @@ const Gallery = () => {
   const [open, setOpen] = useState(false);
   const [imageState, setImageState] = useState();
 
-
-
   const profileImage = userDetails.images.profileImages.find(
     (image) => image.selectedProfile === true
-    );
+  );
 
-
-
-console.log(profileImage);
-
+  console.log(profileImage);
 
   console.log(open);
   const { mutate, status, error } = useMutation({
@@ -63,9 +58,26 @@ console.log(profileImage);
     setImageState(image);
   };
 
-
-
-    console.log(userDetails);
+  const {
+    mutate: deleteImage,
+    status: deleteImageStatus,
+    error: deleteImageError,
+  } = useMutation({
+    mutationKey: ["deleteProfileImage", userDetails._id],
+    mutationFn: (data) =>
+      api
+        .query(user)
+        .delete(api.endpoints.updateProfileImage + data, {
+          withCredentials: true,
+        })
+        .then((res) => res.data),
+    enabled: false,
+  });
+const handleDelete = () => {
+  console.log(imageState)
+  deleteImage(imageState._id)
+}
+  console.log(userDetails);
   const handleSubmit = () => {
     const toastId = toast.loading("Updating Profile Image");
     console.log(imageState);
@@ -108,9 +120,10 @@ console.log(profileImage);
         flexDirection={"column"}
       >
         <Box>
-            <Typography variant="h3">Gallery</Typography>
-            <Avatar src={profileImage.imagePath }>{userDetails.username[0].toUpperCase()}
-            </Avatar>
+          <Typography variant="h3">Gallery</Typography>
+          <Avatar src={profileImage.imagePath}>
+            {userDetails.username[0].toUpperCase()}
+          </Avatar>
         </Box>
         <ImageList
           rowHeight={300}
@@ -155,7 +168,7 @@ console.log(profileImage);
                 justifyContent={"space-evenly"}
                 gap={2}
               >
-                <Button variant="contained" color="error">
+                <Button onClick={handleDelete} variant="contained" color="error">
                   Delete Image
                 </Button>
                 <Button onClick={handleSubmit} variant="contained">

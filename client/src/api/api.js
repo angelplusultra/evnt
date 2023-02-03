@@ -13,6 +13,7 @@ const endpoints = {
   getMe: '/api/users/me',
   deleteAttendance: '/api/events/',
   uploadProfileImage: '/api/users/me/profileimage',
+  updateProfileImage: '/api/users/me/profileimage/',
   updateProfileImage: '/api/users/me/profileimage/'
 };
 

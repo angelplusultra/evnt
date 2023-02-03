@@ -4,12 +4,14 @@ import streamifier from "streamifier";
 import Events from "../../../models/Events.js";
 import Users from "../../../models/Users.js";
 import cloudinary from "../../../config/cloudinary.js";
+import Artists from "../../../models/Artists.js";
 
 const controller = {
   // * @desc Get the activity of users the user is following
   // * @route GET /api/activity
   // * @access PRIVATE
   GetActivity: asyncHandler(async (req, res) => {
+    () => {};
     //! Experimental approach here, might need to be refactored
 
     const { following } = req.user;
@@ -270,18 +272,20 @@ const controller = {
   // @access PRIVATE
   ChangeProfileImage: asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { _id } = req.user;
+    const { _id, isArtist } = req.user;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400);
       throw new Error("Invalid image ID");
     }
 
     // validate user is the owner of the image
-    const user = await Users.findById(_id).select("-password");
+    const user = await (isArtist ? Artists : Users)
+      .findById(_id)
+      .select("-password");
 
     if (!user) {
       res.status(400);
-      throw new Error("User does not exist");
+      throw new Error(`${isArtist ? "Artist" : "User"} does not exist`);
     }
     const imageExists = user.images.profileImages.find(
       (image) => image._id.toHexString() === id
@@ -298,13 +302,11 @@ const controller = {
     if (!currentProfile) {
       imageExists.selectedProfile = true;
       await user.save();
-      return res
-        .status(200)
-        .json({
-          user,
-          status: "success",
-          msg: "You have updated your profile picture",
-        });
+      return res.status(200).json({
+        user,
+        status: "success",
+        msg: "You have updated your profile picture",
+      });
     }
     if (currentProfile._id.toString() === id) {
       res.status(400);
@@ -315,14 +317,61 @@ const controller = {
     imageExists.selectedProfile = true;
 
     await user.save();
+    res.status(200).json({
+      user,
+      status: "success",
+      message: "You have changed your profile image",
+    });
+  }),
 
-    res
-      .status(200)
-      .json({
-        user,
+  DeleteProfileImage: asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { _id, isArtist } = req.user;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400);
+      throw new Error("Invalid image ID");
+    }
+
+    // validate user is the owner of the image
+    const user = await (isArtist ? Artists : Users)
+      .findById(_id)
+      .select("-password");
+
+    if (!user) {
+      res.status(400);
+      throw new Error("User does not exist");
+    }
+    const imageExists = user.images.profileImages.find(
+      (image) => image._id.toHexString() === id
+    );
+
+    if (!imageExists) {
+      res.status(400);
+      throw new Error("Sorry, this image no longer exists");
+    }
+
+    const cloudinaryRes = await cloudinary.uploader.destroy(
+      imageExists.cloudinaryId
+    );
+
+    if (cloudinaryRes.result === "ok") {
+      const updatedUser = await (isArtist ? Artists : Users)
+        .findByIdAndUpdate(
+          _id,
+          { $pull: { "images.profileImages": { _id: imageExists._id } } },
+          { new: true }
+        )
+        .select("-password");
+      res.status(200).json({
         status: "success",
-        message: "You have changed your profile image",
+        msg: "Image was deleted succesfully",
+        updatedUser,
       });
+    } else {
+      res.status(500);
+      throw new Error("Sorry, something went wrong with deletion");
+    }
   }),
 };
 

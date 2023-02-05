@@ -78,78 +78,7 @@ const controller = {
         "You have successfully signed up. Please check your email to verify your account",
     });
   }),
-  ArtistSignUp: asyncHandler(async (req, res) => {
-    // REFACTOR AUTHENTIOCATION FOR USERS & ARTISTS, USERNAMES AND EMAILS MUST BE UNQIUE TO BOTH ENDS
-    const {
-      email,
-      username,
-      password,
-      password2,
-      artistName,
-      areaCode,
-      locationTracking,
-    } = req.body;
-    // !!refactor this as middleware
-    helpers.signUpDataValidation(
-      username,
-      email,
-      password,
-      password2,
-      areaCode,
-      res
-    );
-
-    if (
-      (await Artists.findOne({ email })) ||
-      (await Users.findOne({ email }))
-    ) {
-      res.status(400);
-      throw new Error("Email not available");
-    }
-    if (
-      (await Artists.findOne({ username })) ||
-      (await Users.findOne({ username }))
-    ) {
-      res.status(400);
-      throw new Error("Username not available");
-    }
-
-    const hash = await helpers.hashPassword(password, res);
-    // eslint-disable-next-line max-len
-    const userID = new mongoose.Types.ObjectId();
-
-    const newArtist = new Artists({
-      _id: userID,
-      username,
-      email,
-      password: hash,
-      isArtist: true,
-      areaCode,
-      locationTracking,
-      artistName,
-      activity: [{ activityDetails: `${userID} joined Evnt!`, user: userID }],
-    });
-    const savedArtist = await newArtist.save();
-
-    if (!savedArtist) {
-      res.status(500);
-      throw new Error("Something went wrong with registration");
-    }
-    const verifyToken = helpers.genToken(savedArtist._id);
-
-    if (!verifyToken) {
-      res.status(400);
-      throw new Error("Email verification token could not be created");
-    }
-    await helpers.genEmail({ username, email, res, verifyToken });
-
-    res.status(200).json({
-      message:
-        "You have successfully signed up. Please check your email to verify your account",
-    });
-  }),
-
-  // * @desc Validate form, Authenticate user and send token
+  // * @desc Authenticate user and send token
   // * @route POST /auth/login
   // * @access PUBLIC
   Login: asyncHandler(async (req, res) => {
@@ -159,33 +88,18 @@ const controller = {
       $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
     });
 
-    const artist = await Artists.findOne({
-      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
-    });
-
-    if (!user && !artist) {
+    if (!user) {
       res.status(400);
       throw new Error("User does not exist");
     }
-    await helpers.comparePassword(
-      password,
-      user ? user.password : artist.password,
-      res
-    );
+    await helpers.comparePassword(password, user.password, res);
 
     // eslint-disable-next-line no-underscore-dangle
-    const token = helpers.genToken(user ? user._id : artist._id);
-
-    if (user) {
-      user.password = undefined;
-    } else {
-      artist.password = undefined;
-    }
-
+    const token = helpers.genToken(user._id);
+    user.password = undefined;
     res.status(200).json({
       token,
-      ...(user && { user: user }),
-      ...(artist && { artist: artist }),
+      user,
     });
   }),
 

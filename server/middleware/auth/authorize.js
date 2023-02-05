@@ -13,11 +13,15 @@ async function authorize(req, res, next) {
   const token = req.headers.authorization.split(' ')[1];
 
   try {
+    console.log(token)
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    req.user = await Users.findById(decoded.id).lean();
-
-    delete req.user.password;
+    const user = await Users.findById(decoded.id).select('-password')
+    const artist = await Artists.findById(decoded.id).select('-password')
+    if(!user && !artist){
+      res.status(401)
+      return next(new Error('Unauthorized'))
+    }
+    req.user = artist ? artist : user
 
     return next();
   } catch (error) {

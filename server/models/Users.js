@@ -55,12 +55,11 @@ const userSchema = new mongoose.Schema(
       default: [],
       ref: 'Event',
     },
-    attendingEvents: {
+    performingEvents: {
       type: [{
         event: mongoose.Schema.Types.ObjectId,
         status: String,
       }],
-      default: [],
       ref: 'Event',
     },
     images: {

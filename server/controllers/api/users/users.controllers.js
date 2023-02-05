@@ -4,14 +4,12 @@ import streamifier from "streamifier";
 import Events from "../../../models/Events.js";
 import Users from "../../../models/Users.js";
 import cloudinary from "../../../config/cloudinary.js";
-import Artists from "../../../models/Artists.js";
 
 const controller = {
   // * @desc Get the activity of users the user is following
   // * @route GET /api/activity
   // * @access PRIVATE
   GetActivity: asyncHandler(async (req, res) => {
-    () => {};
     //! Experimental approach here, might need to be refactored
 
     const { following } = req.user;
@@ -175,14 +173,13 @@ const controller = {
     // sort following by most recent createdAt
 
     user.activity.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
     res.json(user);
   }),
 
   // * @desc Get all users
   // * @route GET /api/users
   // * @access PRIVATE
-  GetAllUsers: asyncHandler(async (req, res) => {
+  GetAllUsers: asyncHandler(async (_req, res) => {
     const users = await Users.find().lean();
     res.json(users);
   }),
@@ -323,7 +320,6 @@ const controller = {
       message: "You have changed your profile image",
     });
   }),
-
   DeleteProfileImage: asyncHandler(async (req, res) => {
     const { id } = req.params;
     const { _id, isArtist } = req.user;

@@ -50,6 +50,10 @@ const schemas = {
    .email("email must be a valid email")
    .required("email is required")
    .typeError("email must be a string"),
+   isArtist: yup
+   .boolean()
+   .required('isArtist is required')
+   .typeError('isArtist must be a boolean'),
   password: yup
    .string()
    .required("password is required")
@@ -61,60 +65,26 @@ const schemas = {
    .string()
    .required("areaCode is required")
    .typeError("areaCode must be a string"),
-
-  // ! WHY IS THIS NOT WORKING, VALIDATION OF DATA INSIDE ARRAY ISNT WORKING?
-  locationTracking: yup
-   .array()
-   .of(
-    yup
-     .string()
-     .required("locationTracking is required")
-     .typeError("locationTrackings must be a string")
-   )
-   .required("locationTracking is required")
-   .typeError("locationTracking must be an array")
-   .min(1, "locationTracking must have at least one location")
-   .strict(true),
- }),
- artistSignUpSchema: yup.object().shape({
-  username: yup
-   .string()
-   .required("username is required")
-   .typeError("name must be a string"),
-  email: yup
-   .string()
-   .email("email must be a valid email")
-   .required("email is required")
-   .typeError("email must be a string"),
-  password: yup
-   .string()
-   .required("password is required")
-   .typeError("password must be a string"),
-  password2: yup
-   .string()
-   .oneOf([yup.ref("password"), null], "Passwords must match"),
-  areaCode: yup
-   .string()
-   .required("areaCode is required")
-   .typeError("areaCode must be a string"),
-
-  // ! WHY IS THIS NOT WORKING, VALIDATION OF DATA INSIDE ARRAY ISNT WORKING?
-  locationTracking: yup
-   .array()
-   .of(
-    yup
-     .string()
-     .required("locationTracking is required")
-     .typeError("locationTrackings must be a string")
-   )
-   .required("locationTracking is required")
-   .typeError("locationTracking must be an array")
-   .min(1, "locationTracking must have at least one location")
-   .strict(true),
   artistName: yup
    .string()
-   .required("An artist name is required")
-   .typeError("artistName must be a string"),
+   .when("isArtist", {
+     is: (isArtist) => isArtist === true,
+     then: yup.string().required('Artist name is required').typeError('artistName must be a string')
+   }),
+
+  // ! WHY IS THIS NOT WORKING, VALIDATION OF DATA INSIDE ARRAY ISNT WORKING?
+  locationTracking: yup
+   .array()
+   .of(
+    yup
+     .string()
+     .required("locationTracking is required")
+     .typeError("locationTrackings must be a string")
+   )
+   .required("locationTracking is required")
+   .typeError("locationTracking must be an array")
+   .min(1, "locationTracking must have at least one location")
+   .strict(true),
  }),
  loginSchema: yup.object().shape({
   emailOrUsername: yup
@@ -131,7 +101,7 @@ const schemas = {
   .shape({
    status: yup
     .string()
-    .required("a property of status ios required")
+    .required("a property of status is required")
     .typeError("status must be a string")
     .oneOf(["going", "maybe"], 'status must be either "going" or "maybe"'),
   })

@@ -78,15 +78,13 @@ export default function SignInSide() {
     })
       .then((res) => {
         if (res.data.token) {
-
           // @SAVE TOKEN IN LOCAL STAORAGE AND NAVFIGATE TO DASHBAORD 
-
           localStorage.setItem("token", res.data.token);
             setUser(res.data.token);
             navigate("/dashboard");
 
           toast.update(id, {
-            render: "Welcome back, " + res.data.username,
+            render: "Welcome back, " + res.data.user.username,
             type: "success",
             isLoading: false,
             autoClose: 3000,
@@ -94,7 +92,7 @@ export default function SignInSide() {
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response);
 
         toast.update(id, {
           render: err.response.data.message,

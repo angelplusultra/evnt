@@ -32,7 +32,6 @@ const controller = {
       if (a.activityDetails.includes("followed")) {
         const userId = a.activityDetails.split(" ")[0];
         const followedId = a.activityDetails.split(" ")[2];
-
         const user = await Users.findById(userId).select("username").lean();
         const followed = await Users.findById(followedId)
           .select("username")
@@ -87,6 +86,8 @@ const controller = {
       if (a.activityDetails.includes("joined")) {
         const userId = a.activityDetails.split(" ")[0];
         const user = await Users.findById(userId).select("username").lean();
+        console.log({ERR_CHECK: user})
+        console.log({ERR_CHECK_USERID: userId})
         return {
           activityDetails: `${user.username} joined Evnt!`,
           activityType: "Sign Up",

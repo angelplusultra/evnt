@@ -47,15 +47,6 @@ const validators = {
       return next(error);
     }
   },
-  validateArtistSignUpSchema: async (req, res, next) => {
-    try {
-      const valid = await schemas.artistSignUpSchema.validate(req.body);
-      if (valid) return next();
-    } catch (error) {
-      res.status(400);
-      return next(error);
-    }
-  },
   loginSchema: async (req, res, next) => {
     try {
       await schemas.loginSchema.validate(req.body);

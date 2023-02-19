@@ -87,7 +87,7 @@ const { user } = useContext(UserContext);
     console.log(data);
    const payload = {
     ...data,
-    isArtist: true
+    isArtist: false
    }
     const id = toast.loading("Signing up...");
 

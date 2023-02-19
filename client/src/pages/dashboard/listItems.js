@@ -25,6 +25,9 @@ const handleProfileClick = () => {
 const handleCreateEventClick = () => {
   navigate('/events/create')
 }
+const handleActivityPageClick = () => {
+  navigate('/activity')
+}
 
   return (<React.Fragment>
     <ListItemButton onClick={handleHomeClick}>
@@ -33,7 +36,7 @@ const handleCreateEventClick = () => {
       </ListItemIcon>
       <ListItemText primary="Home" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton onClick={handleActivityPageClick}>
       <ListItemIcon>
         <ShoppingCartIcon />
       </ListItemIcon>

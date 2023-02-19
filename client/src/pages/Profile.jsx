@@ -120,7 +120,7 @@ console.log(userDetails)
 
       <Box alignItems={'center'} justifyContent={'space-between'} display={"flex"}>
         <IconButton onClick={handleOpen}>
-          <Avatar src={profileImage.imagePath}></Avatar>
+          <Avatar src={profileImage?.imagePath}></Avatar>
         </IconButton>
 
         <Typography variant="h4">{userDetails.username}</Typography>
@@ -128,7 +128,7 @@ console.log(userDetails)
 
       <Typography variant="h4">Attending Events</Typography>
       <Box display={"flex"} gap={2}>
-        {userDetails.attendingEvents.map((event) => (
+        {userDetails?.attendingEvents?.map((event) => (
           <EventCard id={event.event} key={event._id} />
         ))}
       </Box>

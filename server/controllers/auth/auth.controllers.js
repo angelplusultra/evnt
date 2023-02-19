@@ -45,6 +45,7 @@ const controller = {
 
     const userID = new mongoose.Types.ObjectId();
     const newUser = new Users({
+      _id: userID,
       username,
       email,
       password: hash,
@@ -95,7 +96,7 @@ const controller = {
     await helpers.comparePassword(password, user.password, res);
 
     // eslint-disable-next-line no-underscore-dangle
-    const token = helpers.genToken(user._id);
+    const token =  helpers.genToken(user._id);
     user.password = undefined;
     res.status(200).json({
       token,
@@ -105,21 +106,20 @@ const controller = {
 
   VerifyAccount: asyncHandler(async (req, res) => {
     const { token } = req.params;
-
+    
     const decoded = jwt.verify(token, process.env.JWT_EMAIL_SECRET);
-    const genUser = await Users.findById(decoded.id).lean();
-    const artist = await Artists.findById(decoded.id).lean();
-    if (!genUser && !artist) {
+    const user = await Users.findById(decoded.id).lean();
+    if (!user) {
       res.status(400);
       throw new Error("User does not exist");
     }
 
-    if ((genUser ? genUser : artist).isVerified) {
+    if (user.isVerified) {
       res.status(400);
       throw new Error("You are already verified");
     }
 
-    const updatedUser = await (genUser ? Users : Artists).findByIdAndUpdate(
+    const updatedUser = await Users.findByIdAndUpdate(
       decoded.id,
       { isVerified: true },
       { new: true }

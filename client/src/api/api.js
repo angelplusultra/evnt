@@ -8,6 +8,7 @@ const endpoints = {
   getAllEvents: "/api/events",
   getSingleUser: "/api/users/",
   getSingleEvent: "/api/events/",
+  getActivity: '/api/users/activity',
   createEvent: "/api/events",
   markAttendance: "/api/events/",
   getMe: '/api/users/me',

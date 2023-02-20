@@ -17,7 +17,7 @@ import { Box } from "@mui/system";
 import ProfilePicModal from "../components/ProfilePicModal";
 
 function ProfilePage() {
-  const userData = useOutletContext();
+  const  outletContext  = useOutletContext();
   const { id } = useParams();
   const location = useLocation();
   const { userDetails, refetch, isRefetching } = useUser();
@@ -27,7 +27,7 @@ function ProfilePage() {
   const handleOpen = () => setModalOpen(true)
   const handleClose = () => setModalOpen(false)
   //data is stale when
-
+console.log(outletContext);
 
 
 	//keep an eye on this
@@ -44,7 +44,7 @@ function ProfilePage() {
   if (id) {
     if (id === userDetails._id) return <Navigate to="/profile" replace />;
 
-    const outerUserProfileImage = userData.userData.images.profileImages.find(image  => image.selectedProfile === true)
+    const outerUserProfileImage = outletContext.userData.images.profileImages.find(image  => image.selectedProfile === true)
 
     return (     
     <Container
@@ -61,37 +61,37 @@ function ProfilePage() {
       <Box alignItems={'center'} justifyContent={'space-between'} display={"flex"}>
         <IconButton >
           <Avatar src={outerUserProfileImage}>
-            {userData.userData.username[0].toUpperCase()}
+            {outletContext?.userData.username[0].toUpperCase()}
           </Avatar>
         </IconButton>
 
-        <Typography variant="h4">{userData.username}</Typography>
+        <Typography variant="h4">{outletContext?.userData.username}</Typography>
       </Box>
 
       <Typography variant="h4">Attending Events</Typography>
       <Box display={"flex"} gap={2}>
-        {userData?.userData.attendingEvents?.map((event) => (
+        {outletContext?.userData.attendingEvents?.map((event) => (
           <EventCard id={event.event} key={event._id} />
         ))}
       </Box>
       <Typography variant="h4">Hosting Events</Typography>
       <Box display={"flex"} gap={2}>
         {" "}
-        {userData?.userData.createdEvents.map((event) => (
+        {outletContext.userData.createdEvents.map((event) => (
           <EventCard id={event} />
         ))}
       </Box>
       <Typography variant="h5">Following</Typography>
-      {userData?.userData.following.map((user, i) => (
+      {outletContext?.userData.following.map((user, i) => (
         <User key={i} userId={user} />
       ))}
       <Typography variant="h5">Followers</Typography>
-      {userData?.userData.followers.length > 0
-        ? userData.followers.map((user, i) => <User key={i} userId={user} />)
+      {outletContext?.userData.followers.length > 0
+        ? outletContext.userData.followers.map((user, i) => <User key={i} userId={user} />)
         : "No Followers :("}
       <Typography variant="h5">Locations</Typography>
       <Typography variant="h6">
-        {userData?.userData.locationTracking.map((county) => county)}
+        {outletContext.userData.locationTracking.map((county) => county)}
       </Typography>
       <ProfilePicModal handleClose={handleClose} handleOpen={handleOpen} modalState={modalOpen} />
     </Container>

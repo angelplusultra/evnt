@@ -91,7 +91,8 @@ const controller = {
         return {
           activityDetails: `${user.username} joined Evnt!`,
           activityType: "Sign Up",
-          id: a._id,
+          userId
+
         };
       }
     });

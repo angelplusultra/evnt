@@ -212,7 +212,7 @@ const controller = {
             folder: "/event/users/images/profileimages",
             filename_override: `${Date.now()}_${file.name}`,
           },
-          (err, result) => {
+          (_, result) => {
             if (result) {
               resolve(result);
             } else {

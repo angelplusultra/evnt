@@ -18,6 +18,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 function CreateEvent() {
   let toastId;
@@ -27,6 +28,26 @@ function CreateEvent() {
   const [input, setInput] = useState("");
   const [lineup, setLineup] = useState([]);
   const [inputError, setError] = useState(null);
+
+  const isValidFile = (image) => {
+    if (image) {
+      if (image[0].size > 1024 * 1024) {
+        toast.error("File size too large");
+        return false;
+      }
+      switch (image[0].type) {
+        case "image/jpeg":
+          return true;
+        case "image/png":
+          return true;
+        case "image/jpg":
+          return true;
+        default:
+          toast.error("File format not supported");
+          return false;
+      }
+    }
+  };
 
   function handleInputChange(e) {
     if (inputError) setError(null);
@@ -67,16 +88,28 @@ function CreateEvent() {
   function onSubmit(data) {
     if (lineup.length === 0)
       return setError("Please add at least one artist to the lineup");
-
-    const formattedData = {
-      ...data,
-      date: data.date._d,
-      lineup: lineup,
-    };
-    mutate(formattedData);
+    let form = new FormData();
+    for (const key in data) {
+      if (key === "location") {
+        form.append("location", JSON.stringify(data.location));
+      } else if (key === "poster") {
+        form.append("poster", data[key][0]);
+      } else {
+        form.append(key, data[key]);
+      }
+    }
+    lineup.forEach((artist) => form.append("lineup", artist));
+    // const formattedData = {
+    //   date: data.date._d,
+    //   lineup: lineup,
+    //   ...form,
+    // };
+    //
+    // return console.log(form)
+    mutate(form);
   }
   if (error) {
-    return error.response.data.errors.forEach((error) =>
+    return error.response?.data?.errors?.forEach((error) =>
       console.log(error.message)
     );
   }
@@ -119,6 +152,19 @@ function CreateEvent() {
           helperText={errors.genre?.message}
           {...register("genre", { required: "Genre is required" })}
         />
+        <FormLabel>Upload Poster</FormLabel>
+        <IconButton color="primary" component="label">
+          {" "}
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            {...register("poster", {
+              validate: isValidFile,
+            })}
+          />
+          <FileUploadIcon />
+        </IconButton>
         <FormLabel>Lineup</FormLabel>
 
         {/*Make it so when the user clicks the button it adds a new value to the lineup list  */}
@@ -152,6 +198,20 @@ function CreateEvent() {
           error={errors.location?.address ? true : false}
           helperText={errors.location?.address?.message}
           {...register("location.address", { required: "Address is required" })}
+        />
+        <TextField
+          margin="normal"
+          rows={6}
+          maxRows={Infinity}
+          fullWidth
+          id="description"
+          label="Description"
+          name="description"
+          autoComplete="description"
+          autoFocus
+          error={errors.description ? true : false}
+          helperText={errors.description?.message}
+          {...register("description", { required: "Description is required" })}
         />
         <TextField
           margin="normal"

@@ -1,8 +1,10 @@
-import axios from 'axios';
-import asyncHandler from 'express-async-handler';
-import mongoose from 'mongoose';
-import Events from '../../../models/Events.js';
-import Users from '../../../models/Users.js';
+import axios from "axios";
+import asyncHandler from "express-async-handler";
+import mongoose from "mongoose";
+import Events from "../../../models/Events.js";
+import Users from "../../../models/Users.js";
+import cloudinary from "../../../config/cloudinary.js";
+import streamifier from 'streamifier'
 
 const controller = {
   // * @desc Get all Events based on users location tracking & followed
@@ -11,11 +13,11 @@ const controller = {
   GetAllEvents: asyncHandler(async (req, res) => {
     const { locationTracking, following } = req.user;
     const events = await Events.find()
-      .where('location.county')
+      .where("location.county")
       .in(locationTracking)
       .lean();
     const followedEvents = await Events.find()
-      .where('host')
+      .where("host")
       .in(following)
       .lean();
     const allEvents = [...events, ...followedEvents];
@@ -32,12 +34,12 @@ const controller = {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400);
-      throw new Error('Invalid event ID');
+      throw new Error("Invalid event ID");
     }
     const event = await Events.findById(id);
     if (!event) {
       res.status(404);
-      throw new Error('Event does not exist');
+      throw new Error("Event does not exist");
     }
     res.status(200).json(event);
   }),
@@ -47,18 +49,18 @@ const controller = {
   GetFollowingEvents: asyncHandler(async (req, res) => {
     const { following } = req.user;
     const followedEvents = await Events.find()
-      .where('host')
+      .where("host")
       .in(following)
-      .sort({ createdAt: 'desc' })
+      .sort({ createdAt: "desc" })
       .lean();
 
     res.json(followedEvents);
   }),
 
   CreateEvent: asyncHandler(async (req, res) => {
-    const {
-      title, location, date, genre, lineup,
-    } = req.body;
+    const { title, location, date, genre, lineup, description } = req.body;
+    const file = req.files.poster;
+    console.log(file);
 
     const host = req.user._id;
 
@@ -66,10 +68,32 @@ const controller = {
     // helpers.validateEventData(host, location, date, attendance, res);
 
     const locationData = await axios.get(
-      `https://service.zipapi.us/zipcode/county/${location.zipCode}?X-API-KEY=${process.env.ZIP_API_KEY}`,
+      `https://service.zipapi.us/zipcode/county/${location.zipCode}?X-API-KEY=${process.env.ZIP_API_KEY}`
     );
 
     const { county: counties } = locationData.data.data;
+
+    const uploadFromBuffer = (file) =>
+      new Promise((resolve, reject) => {
+        const cldUploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: "/event/events/images/posters",
+            filename_override: `${Date.now()}_${file.name}`,
+          },
+          (_, result) => {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(
+                new Error("Something went wrong with uploading the image")
+              );
+            }
+          }
+        );
+        streamifier.createReadStream(file.data).pipe(cldUploadStream);
+      });
+
+    const fileUploadResult = await uploadFromBuffer(file);
 
     const event = new Events({
       title,
@@ -78,7 +102,17 @@ const controller = {
       date,
       genre,
       lineup,
-      attendance: [{ user: host, status: 'going' }],
+      description,
+      images: {
+        posters: [
+          {
+            cloudinaryId: fileUploadResult.public_id,
+            imagePath: fileUploadResult.secure_url,
+            currentDisplay: true,
+          },
+        ],
+      },
+      attendance: [{ user: host, status: "going" }],
     });
     const [county] = counties;
     event.location.county = county;
@@ -96,11 +130,11 @@ const controller = {
 
           attendingEvents: {
             event: event._id,
-            status: 'going',
+            status: "going",
           },
         },
       },
-      { new: true },
+      { new: true }
     );
 
     await event.save();
@@ -124,21 +158,23 @@ const controller = {
 
     if (!event) {
       res.status(400);
-      throw new Error('Event does not exist');
+      throw new Error("Event does not exist");
     }
 
     // @Step: 2 - Check if the user has already marked their attendance status
     const { attendance } = event;
 
     const attendanceStatusExists = attendance.find(
-      (user) => user.user._id.toString() === _id.toString(),
+      (user) => user.user._id.toString() === _id.toString()
     );
 
     // @Step: 3 - If the user has already marked their attendance status, update it
     if (attendanceStatusExists) {
       if (attendanceStatusExists.status === status) {
         res.status(401);
-        throw new Error(`You have already marked your attendance status as ${status}`);
+        throw new Error(
+          `You have already marked your attendance status as ${status}`
+        );
       }
 
       attendanceStatusExists.status = status;
@@ -152,18 +188,16 @@ const controller = {
               ref1: _id,
               ref2: event._id,
             },
-
           },
-
         },
-        { new: true },
+        { new: true }
       );
 
       // @ Step: 4 - Update the user's attendingEvents array
 
       const user = await Users.findById(_id);
       const attendingEvent = user.attendingEvents.find(
-        (ev) => ev.event.toString() === eventId.toString(),
+        (ev) => ev.event.toString() === eventId.toString()
       );
       attendingEvent.status = status;
       await user.save();
@@ -193,7 +227,7 @@ const controller = {
           },
         },
       },
-      { new: true },
+      { new: true }
     );
     return res.status(200).send({
       message: `You have marked your attendance status for ${event.title} as ${status}`,
@@ -212,30 +246,30 @@ const controller = {
     // @ Step: 1 - Validate data (event id)\
     if (!mongoose.Types.ObjectId.isValid(eventId)) {
       res.status(400);
-      throw new Error('Invalid event id');
+      throw new Error("Invalid event id");
     }
 
     const event = await Events.findById(eventId);
 
     if (!event) {
       res.status(400);
-      throw new Error('Event does not exist');
+      throw new Error("Event does not exist");
     }
 
     // @Step: 2 - Check if the user has already marked their attendance status
     const { attendance } = event;
 
     const attendanceStatusExists = attendance.find(
-      (attendant) => attendant.user.toString() === _id.toString(),
+      (attendant) => attendant.user.toString() === _id.toString()
     );
 
     if (!attendanceStatusExists) {
       res.status(400);
-      throw new Error('You have no attendance status with this event');
+      throw new Error("You have no attendance status with this event");
       // @Step: 3 - If the user has already marked their attendance status, delete it
     } else {
       const filteredAttendance = attendance.filter(
-        (attendant) => attendant.user.toString() !== _id.toString(),
+        (attendant) => attendant.user.toString() !== _id.toString()
       );
 
       event.attendance = filteredAttendance;
@@ -254,11 +288,11 @@ const controller = {
             attendingEvents: { event: eventId },
           },
         },
-        { new: true },
+        { new: true }
       );
 
       res.status(200).send({
-        message: 'You have deleted your attendance status',
+        message: "You have deleted your attendance status",
         updatedEvent,
       });
     }

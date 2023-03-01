@@ -5,10 +5,18 @@ import path from 'path';
 
 // eslint-disable-next-line import/no-named-as-default
 import schemas from '../../validation/schemas/schemas.js';
+
 //! NEEDS TESTING
 // * Schema validators
 const validators = {
   validateEventSchema: async (req, res, next) => {
+    let formattedData = {}
+    req.body.location = JSON.parse(req.body.location)
+    if(!Array.isArray(req.body.lineup)) {
+      req.body.lineup = [req.body.lineup]
+       console.log(req.body)
+    }
+
     try {
       await schemas.eventSchema.validate(req.body);
     } catch (error) {
@@ -31,6 +39,9 @@ const validators = {
       res.status(400);
       errors.push(new Error('Please enter a valid zipcode'));
     }
+
+
+
 
     if (errors.length > 0) return next(errors);
 

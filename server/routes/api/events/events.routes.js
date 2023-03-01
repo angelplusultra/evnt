@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import eventCont from '../../../controllers/api/events/events.controllers.js';
 import validators from '../../../middleware/validation/validators.js';
-
+import uploadPoster from '../../../middleware/upload/poster_upload.js';
 const router = Router();
 
 router
   .route('/')
   .get(eventCont.GetAllEvents)
-  .post(validators.validateEventSchema, eventCont.CreateEvent);
+  .post(uploadPoster, validators.validateEventSchema, eventCont.CreateEvent);
 
 router.route('/following').get(eventCont.GetFollowingEvents);
 

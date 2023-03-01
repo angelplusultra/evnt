@@ -120,8 +120,8 @@ const handleDelete = () => {
         flexDirection={"column"}
       >
         <Box>
-          <Typography variant="h3">Gallery</Typography>
-          <Avatar src={profileImage.imagePath}>
+          <Typography variant="h3">{userDetails.username}' s Gallery</Typography>
+          <Avatar src={profileImage?.imagePath}>
             {userDetails.username[0].toUpperCase()}
           </Avatar>
         </Box>

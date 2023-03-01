@@ -23,18 +23,26 @@ function ActvityPage() {
           return (
             <li>
               <NavLink to={`/users/${activity.user.id}`}>{username}</NavLink>{" "}
-              created an event called <NavLink to={`/events/${id}`}>{title}</NavLink>
+              created an event called{" "}
+              <NavLink to={`/events/${id}`}>{title}</NavLink>
             </li>
           );
         }
-        if(activityType === 'Follow'){
-          const { followed } = activity
+        if (activityType === "Follow") {
+          const { followed } = activity;
           return (
             <li>
-              <NavLink to={`/users/${activity.userId}`}>{username}</NavLink> followed {(followed.id === userDetails.id ? <NavLink to={`/users/${followed.id}`}>{followed. username}</NavLink> : "you")}
-          </li>
-          )
-
+              <NavLink to={`/users/${activity.userId}`}>{username}</NavLink>{" "}
+              followed{" "}
+              {followed.id === userDetails.id ? (
+                <NavLink to={`/users/${followed.id}`}>
+                  {followed.username}
+                </NavLink>
+              ) : (
+                "you"
+              )}
+            </li>
+          );
         }
         return (
           <li>

@@ -33,8 +33,21 @@ const eventSchema = new mongoose.Schema(
         required: true,
       },
     },
+    images: {
+      posters:{
+        type: [{
+          imagePath: String,
+          cloudinaryId: String,
+		      currentDisplay: Boolean,
+        }],
+      }
+    },
     date: {
       type: Date,
+      required: true,
+    },
+    description: {
+      type: String,
       required: true,
     },
     genre: {

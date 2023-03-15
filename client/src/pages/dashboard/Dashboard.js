@@ -165,6 +165,8 @@ function DashboardContent({ data }) {
           <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={2}>
               {data.map((ev, i) => {
+
+                console.log(ev)
                 return (
                   <Grid key={i} item xs={12} md={12} lg={12}>
                     <EventCard
@@ -173,6 +175,7 @@ function DashboardContent({ data }) {
                       title={ev.title}
                       description={ev.description}
                       location={ev.location}
+                      poster={ev.images.posters[0].imagePath}
                       id={ev._id}
                     />
                   </Grid>

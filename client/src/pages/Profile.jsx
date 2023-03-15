@@ -51,7 +51,6 @@ console.log(outletContext);
 	
 	sx={{
 		height: '100vh',
-		bgcolor: ' grey',
         display: "flex",
         alignItems: "center",
         flexDirection: "column",
@@ -111,7 +110,6 @@ console.log(userDetails)
 	
 	sx={{
 		height: '100vh',
-		bgcolor: ' grey',
         display: "flex",
         alignItems: "center",
         flexDirection: "column",

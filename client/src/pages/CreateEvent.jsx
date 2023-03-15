@@ -18,14 +18,14 @@ import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
-
+import ImageIcon from '@mui/icons-material/Image';
 function CreateEvent() {
   let toastId;
   const navigate = useNavigate();
   // @1 Get user from context
   const { user } = useUser();
   const [input, setInput] = useState("");
+  const [previewImage, setPreviewImage] = useState()
   const [lineup, setLineup] = useState([]);
   const [inputError, setError] = useState(null);
 
@@ -86,8 +86,9 @@ function CreateEvent() {
     },
   });
   function onSubmit(data) {
-    if (lineup.length === 0)
-      return setError("Please add at least one artist to the lineup");
+    if (lineup.length === 0) return setError("Please add at least one artist to the lineup");
+
+
     let form = new FormData();
     for (const key in data) {
       if (key === "location") {
@@ -152,19 +153,24 @@ function CreateEvent() {
           helperText={errors.genre?.message}
           {...register("genre", { required: "Genre is required" })}
         />
-        <FormLabel>Upload Poster</FormLabel>
-        <IconButton color="primary" component="label">
-          {" "}
-          <input
+        <FormLabel error= {errors.poster ? true: false}>{errors.poster ? errors.poster.message : "Upload Poster"}</FormLabel>
+        <IconButton onChange={(e) => setPreviewImage(e.target.files[0])} color="primary" component="label">
+          <input 
+    
             type="file"
             accept="image/*"
             hidden
             {...register("poster", {
+              required: "Please upload a poster for your event",
               validate: isValidFile,
             })}
           />
-          <FileUploadIcon />
+    {!previewImage ? <ImageIcon /> : "Change?"}
+
         </IconButton>
+    {previewImage &&  <Box >
+      <img width={200} height={200} src={URL.createObjectURL(previewImage)} />
+      </Box>}
         <FormLabel>Lineup</FormLabel>
 
         {/*Make it so when the user clicks the button it adds a new value to the lineup list  */}
@@ -185,20 +191,6 @@ function CreateEvent() {
         <IconButton onClick={addArtistToList} aria-label="add">
           <AddIcon />
         </IconButton>
-
-        <FormLabel>Location</FormLabel>
-        <TextField
-          margin="normal"
-          fullWidth
-          id="title"
-          label="Address"
-          name="address"
-          autoComplete="address"
-          autoFocus
-          error={errors.location?.address ? true : false}
-          helperText={errors.location?.address?.message}
-          {...register("location.address", { required: "Address is required" })}
-        />
         <TextField
           margin="normal"
           rows={6}
@@ -212,6 +204,20 @@ function CreateEvent() {
           error={errors.description ? true : false}
           helperText={errors.description?.message}
           {...register("description", { required: "Description is required" })}
+        />
+
+        <FormLabel>Location</FormLabel>
+        <TextField
+          margin="normal"
+          fullWidth
+          id="title"
+          label="Address"
+          name="address"
+          autoComplete="address"
+          autoFocus
+          error={errors.location?.address ? true : false}
+          helperText={errors.location?.address?.message}
+          {...register("location.address", { required: "Address is required" })}
         />
         <TextField
           margin="normal"

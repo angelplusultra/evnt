@@ -8,13 +8,14 @@ import {
   Avatar,
   Button,
   Box,
+  CardMedia
 } from "@mui/material";
 import { useContext } from "react";
 import { UserContext } from "../context/userContext";
 import endpoints, { api, domain } from "../api/api";
 import { useNavigate } from "react-router-dom";
 
-function EventCard({ host, title, location, id }) {
+function EventCard({ host, title, location, id, poster }) {
   console.log(host);
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
@@ -37,6 +38,13 @@ function EventCard({ host, title, location, id }) {
   if (data) {
     return (
       <Card sx={{ minWidth: 275 }}>
+      <Box
+      display={"flex"}
+      justifyContent="space-between"
+      alignItems={"center"}
+      >
+
+      
         <CardContent>
           <Box
             sx={{
@@ -71,6 +79,10 @@ function EventCard({ host, title, location, id }) {
           </Typography>
           <Typography variant="body2">Description</Typography>
         </CardContent>
+        <Box>
+            <img src={poster} />
+        </Box>
+      </Box>
         <CardActions>
           <Button
             onClick={() => navigate(`/events/${id}`, { state: data })}

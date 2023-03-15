@@ -17,10 +17,6 @@ import ActvityPage from "../pages/dashboard/Activity/ActivityPage";
 const PublicRoutes = () => {
   return (
     <>
-      <nav>
-        <Link to="/profile">Profile</Link>
-        <Link to="/dashboard">Dashboard</Link>
-      </nav>
       <Routes>
         //* -----Public Routes------
         <Route index element={<Landing />} />

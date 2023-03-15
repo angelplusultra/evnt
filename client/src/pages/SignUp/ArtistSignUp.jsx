@@ -139,7 +139,7 @@ function ArtistSignUp() {
      sm={4}
      md={7}
      sx={{
-      backgroundImage: "url(https://source.unsplash.com/random/?event)",
+      backgroundImage: "url(https://source.unsplash.com/random/?concert)",
       backgroundRepeat: "no-repeat",
       backgroundColor: (t) =>
        t.palette.mode === "light" ? t.palette.grey[50] : t.palette.grey[900],

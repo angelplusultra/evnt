@@ -190,13 +190,16 @@ function ButtonContent({attendType}){
 
 }
 
-  
+  console.log(eventData)
   return (
     <Container>
       <Typography variant="h2">{eventData?.title}</Typography>
       <Typography variant="body1">
         Hosted by {hostData && hostData.username}
       </Typography>
+      <Box>
+        <img src={eventData?.images.posters[0].imagePath} />
+      </Box>
       <Typography variant="h4">Date</Typography>
       <Typography>{formattedDate}</Typography>
       <Typography variant="h4">Location</Typography>

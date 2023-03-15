@@ -1,4 +1,10 @@
-body{
-	background-color: darkslategrey
-	;
+/* body{ */
+/* 	background-color: darkslategrey */
+/* 	; */
+/* } */
+
+
+html, body{
+  margin: 0;
+  padding: 0
 }

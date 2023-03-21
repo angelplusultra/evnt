@@ -13,8 +13,10 @@ import uber from "../assets/uber.png";
 import airbnb from "../assets/airbnb.png";
 import boiler from "../assets/boiler.png";
 import spotify from "../assets/spotify.png";
+import {useNavigate} from 'react-router-dom'
 
 const Landing = () => {
+  const  navigate = useNavigate()
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
@@ -38,7 +40,7 @@ const Landing = () => {
                   gap: 2,
                 }}
               >
-                <Button
+                <Button onClick={() => navigate('/login') }
                   sx={{
                     borderRadius: 10,
                   }}

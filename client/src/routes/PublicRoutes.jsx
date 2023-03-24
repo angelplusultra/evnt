@@ -13,6 +13,7 @@ import ValidateUser from "../components/validation/ValidateUser";
 import Gallery from "../pages/Gallery/Gallery";
 import ArtistSignUp from "../pages/SignUp/ArtistSignUp";
 import ActvityPage from "../pages/dashboard/Activity/ActivityPage";
+import { NavBar } from "../components/NavBar";
 
 const PublicRoutes = () => {
   return (
@@ -28,7 +29,9 @@ const PublicRoutes = () => {
         // ------End of Public Routes--------- //
         --------ProtectedRoutes-----------
         <Route element={<Protect />}>
+
           <Route path="dashboard" element={<Dashboard />} />
+    <Route element={<NavBar />}>
           <Route path="activity" element={<ActvityPage />} />
           <Route path="profile">
             <Route index element={<ProfilePage />} />
@@ -48,14 +51,14 @@ const PublicRoutes = () => {
               </Route>
             </Route>
           </Route>
+    </Route>
           <Route path="profile" element={<>Profile Page</>} />
           <Route path="settings" element={<>Settings</>} />
         </Route>
         // ----End of Protected Routes-----
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </>
+        </>
   );
 };
 

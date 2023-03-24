@@ -13,6 +13,7 @@ import uber from "../assets/uber.png";
 import airbnb from "../assets/airbnb.png";
 import boiler from "../assets/boiler.png";
 import spotify from "../assets/spotify.png";
+import graphic from '../assets/evnt_dm.png'
 import {useNavigate} from 'react-router-dom'
 
 const Landing = () => {
@@ -54,15 +55,16 @@ const Landing = () => {
           </Toolbar>
         </AppBar>
       </Box>
-      <Container>
+      <Container sx={{
+      }}>
         <Box
           sx={{
             display: "flex",
-            alignItems: "start",
+            alignItems: "center",
             justifyContent: "space-evenly",
             flexDirection: { xs: "column", lg: "row" },
-            mt: 20,
-            gap: 30,
+            mt: 8,
+              gap: {xs: 10, md: 0}
           }}
         >
           <Box sx={{
@@ -71,9 +73,23 @@ const Landing = () => {
             alignItems: {
               xs: 'center', lg: 'start'
             },
+
             alignSelf: 'center'  
           }}>
-            <Typography variant="h3">
+            <Typography sx={{
+              px: {
+                xs: 15,
+                  md: 0
+              },
+              fontSize: {
+                xs: 30,
+                md: 50
+              },
+                textAlign: {
+                  xs: 'center',
+                  md: 'start'
+                }
+            }} variant="h3">
               Connect your community today with the world's leading social media
               application
             </Typography>
@@ -88,9 +104,13 @@ const Landing = () => {
               Sign Up
             </Button>
           </Box>
-          <Box bgcolor={"black"}>
-            <img width={300} src={sloth} />
-          </Box>
+          <Box sx={{
+            textAlign: 'center',
+            width: {
+              xs: 300,
+              md: 700
+            }
+          }} component={'img'} src={graphic} />
         </Box>
 
         <Box
@@ -105,6 +125,8 @@ const Landing = () => {
           <Typography
             sx={{
               fontWeight: 100,
+                textAlign: 'center',
+                mb: 3
             }}
             variant="h3"
           >
@@ -112,7 +134,8 @@ const Landing = () => {
           </Typography>
           <Typography
             sx={{
-              fontSize: 20,
+              fontSize: 15,
+                textAlign: 'center',
             }}
           >
             Powered by the world's leading tech organizations
@@ -124,10 +147,11 @@ const Landing = () => {
             alignItems: "center",
             justifyContent: "center",
             mt: 5,
+              mb: 5,
             gap: 5,
           }}
         >
-          <img width={80} src={uber} />
+          <img color="white"width={80} src={uber} />
           <img width={80} src={airbnb} />
           <img width={80} src={boiler} />
           <img width={80} src={spotify} />

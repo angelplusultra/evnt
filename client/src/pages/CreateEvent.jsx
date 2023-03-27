@@ -7,6 +7,10 @@ import {
   FormLabel,
   IconButton,
   Typography,
+  List,
+  ListItemText,
+  ListItem,
+  Divider,
 } from "@mui/material";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { api } from "../api/api";
@@ -30,6 +34,8 @@ function CreateEvent() {
   const [previewImage, setPreviewImage] = useState();
   const [lineup, setLineup] = useState([]);
   const [inputError, setError] = useState(null);
+
+  const inputSize = "large";
 
   const isValidFile = (image) => {
     if (image) {
@@ -121,20 +127,36 @@ function CreateEvent() {
   // when thew user clicks the plus button, add the value to the array
   // Display the array in the form
   // When the user submits the form, send the array along with the rest of the data
+  //
+
+  let inputSX = {
+    width: 500,
+  };
   return (
-    
     <Container>
-    <Box>
-    <Typography variant="h1">Create Event</Typography>
-    </Box>
+      <Box>
+        <Typography
+          sx={{
+            mt: 5,
+            ml: { lg: 15, sm: 0 },
+            textAlign: {sm: 'center', lg: 'start'}
+          }}
+          variant="h3"
+        >
+          Create Event
+        </Typography>
+      </Box>
       <Box
         sx={{
           p: 5,
-          mb: 10,  
+          mb: 10,
           display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
+          flexDirection: {
+            md: 'row',
+            xs: 'column'
+          },
+          justifyContent: "space-evenly",
+          alignItems: {sm: 'center', md: 'flex-start'}
         }}
       >
         <Box
@@ -144,30 +166,34 @@ function CreateEvent() {
             display: "flex",
             gap: 2,
             flexDirection: "column",
-              justifyContent: 'center',
-              alignItems: 'flex-start',
+            justifyContent: "center",
+            alignItems: "flex-start",
+            borderRadius: 5,
+            p: 5,
+            boxShadow: 3,
           }}
         >
           <TextField
-            size="small"
-            margin="normal"
+            size={inputSize}
+            margin="none"
             id="title"
             label="Title"
             name="title"
             autoComplete="title"
+            sx={inputSX}
             autoFocus
             error={errors.title ? true : false}
             helperText={errors.title?.message}
             {...register("title", { required: "Title is required" })}
           />
           <TextField
-            size="small"
+            sx={inputSX}
+            size={inputSize}
             margin="normal"
             id="genre"
             label="Genre"
             name="genre"
             autoComplete="genre"
-            autoFocus
             error={errors.genre ? true : false}
             helperText={errors.genre?.message}
             {...register("genre", { required: "Genre is required" })}
@@ -189,7 +215,7 @@ function CreateEvent() {
                 validate: isValidFile,
               })}
             />
-            {!previewImage ? <ImageIcon /> : "Change?"}
+            <ImageIcon />
           </IconButton>
           {previewImage && (
             <Box>
@@ -205,13 +231,13 @@ function CreateEvent() {
           {/*Make it so when the user clicks the button it adds a new value to the lineup list  */}
 
           <TextField
+            sx={inputSX}
             margin="normal"
             size="small"
             id="lineup"
             label="Lineup"
             name="lineup"
             autoComplete="lineup"
-            autoFocus
             value={input}
             onChange={handleInputChange}
             error={inputError ? true : false}
@@ -221,15 +247,16 @@ function CreateEvent() {
             <AddIcon />
           </IconButton>
           <TextField
+            sx={inputSX}
             size="small"
             margin="normal"
-            rows={6}
+            rows={8}
             maxRows={Infinity}
             id="description"
             label="Description"
             name="description"
             autoComplete="description"
-            autoFocus
+            multiline
             error={errors.description ? true : false}
             helperText={errors.description?.message}
             {...register("description", {
@@ -239,13 +266,13 @@ function CreateEvent() {
 
           <FormLabel>Location</FormLabel>
           <TextField
+            sx={inputSX}
             size="small"
             margin="normal"
             id="title"
             label="Address"
             name="address"
             autoComplete="address"
-            autoFocus
             error={errors.location?.address ? true : false}
             helperText={errors.location?.address?.message}
             {...register("location.address", {
@@ -253,25 +280,25 @@ function CreateEvent() {
             })}
           />
           <TextField
+            sx={inputSX}
             size="small"
             margin="normal"
             id="city"
             label="City"
             name="city"
             autoComplete="city"
-            autoFocus
             error={errors.location?.city ? true : false}
             helperText={errors.location?.city?.message}
             {...register("location.city", { required: "City is required" })}
           />
           <TextField
+            sx={inputSX}
             size="small"
             margin="normal"
             id="zipCode"
             label="Zip Code"
             name="zipCode"
             autoComplete="zipCode"
-            autoFocus
             error={errors.location?.zipCode ? true : false}
             helperText={errors.location?.zipCode?.message}
             {...register("location.zipCode", {
@@ -283,13 +310,13 @@ function CreateEvent() {
             })}
           />
           <TextField
+            sx={inputSX}
             size="small"
             margin="normal"
             id="state"
             label="State"
             name="state"
             autoComplete="state"
-            autoFocus
             error={errors.location?.state ? true : false}
             helperText={errors.location?.state?.message}
             {...register("location.state", { required: "State is required" })}
@@ -311,6 +338,8 @@ function CreateEvent() {
                   inputFormat="MM/DD/YYYY hh:mm A"
                   renderInput={(params) => (
                     <TextField
+                      margin="normal"
+                      sx={inputSX}
                       {...params}
                       error={!!error}
                       helperText={error?.message}
@@ -323,22 +352,47 @@ function CreateEvent() {
             )}
           />
 
-          <Button size="large" type="submit" variant="contained">
+          <Button sx={{
+            mt:1
+          }} fullWidth size="large" type="submit" variant="contained">
             Submit
           </Button>
         </Box>
-    <Box sx={{
-      display: 'flex',
-        flexDirection: 'column'
-
-    }}>
-        <FormLabel>Lineup</FormLabel>
-        <ol>
-          {lineup.map((artist, index) => (
-            <li key={index}>{artist}</li>
-          ))}
-        </ol>
-    </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Typography
+            sx={{
+              mb: 1,
+                textAlign: 'center'
+            }}
+            variant="h5"
+          >
+            Lineup
+          </Typography>
+          <List
+            sx={{
+              p: 4,
+              borderRadius: 3,
+              width: {sm: 600, md: 300},
+              height: 'fit-content',
+              minHeight: 300,
+              boxShadow: 3,
+            }}
+          >
+            {lineup.map((artist, index) => (
+              <>
+                <ListItem key={index}>
+                  <ListItemText sx={{}} primary={`${index + 1}. ${artist}`} />
+                </ListItem>
+                <Divider />
+              </>
+            ))}
+          </List>
+        </Box>
       </Box>
     </Container>
   );

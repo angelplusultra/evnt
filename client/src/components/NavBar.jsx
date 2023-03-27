@@ -91,11 +91,11 @@ import {useUser} from '../context/userContext.js'
 import {useState, useEffect}from 'react'
 import logo from '../assets/sloth.png'
 const pages = ['Home', 'Create Event', 'Activity'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Profile', 'Logout']; 
 
 export function NavBar() {
   
-const {userDetails: {username, images}} = useUser()
+const {setUser, userDetails: {username, images}} = useUser()
   const profileImage = images.profileImages.find(
     (image) => image.selectedProfile === true
   );
@@ -126,7 +126,11 @@ const navigateTo = (page) => {
   if(page === 'Activity') return navigate('/activity')
 }
 
-
+const logout = () => {
+  localStorage.removeItem('token')
+  setUser(null)
+  return navigate('/')
+}
 
 
   return (
@@ -171,7 +175,7 @@ const navigateTo = (page) => {
             >
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                  <Typography onClick={() => navigateTo(page)} textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -217,11 +221,24 @@ const navigateTo = (page) => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              {settings.map((setting) => {
+
+                if(setting === 'Profile'){
+                  return (
+                    <MenuItem onClick={() => navigate('/profile')} key={setting} >
+                      <Typography textAlign="center">{setting}</Typography>
+                    </MenuItem>
+                  )
+                } else if(setting === 'Logout'){
+                  return (
+                      <MenuItem onClick={logout} key={setting} >
+                        <Typography textAlign="center">{setting}</Typography>
+                    </MenuItem>
+
+                  )
+                }
+
+              })}
             </Menu>
           </Box>
         </Toolbar>

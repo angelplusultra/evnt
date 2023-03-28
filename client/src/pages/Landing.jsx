@@ -13,7 +13,7 @@ import uber from "../assets/uber.png";
 import airbnb from "../assets/airbnb.png";
 import boiler from "../assets/boiler.png";
 import spotify from "../assets/spotify.png";
-import graphic from '../assets/evnt_dm.png'
+import graphic from '../assets/evnt_hero_graphic.PNG'
 import {useNavigate} from 'react-router-dom'
 
 const Landing = () => {

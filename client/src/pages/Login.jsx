@@ -22,6 +22,7 @@ import { useNavigate, Navigate } from "react-router-dom";
 import { useEffect, useContext } from "react";
 import { UserContext } from "../context/userContext";
 import { NavLink } from "react-router-dom";
+import usersLoginGraphic from '../assets/evnt_users.png'
 
 function Copyright(props) {
 
@@ -102,7 +103,7 @@ export default function SignInSide() {
         });
       });
   };
-
+/* -------BACKGROUND IMAGE-----------*/
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
@@ -113,14 +114,14 @@ export default function SignInSide() {
           sm={4}
           md={7}
           sx={{
-            backgroundImage: "url(https://source.unsplash.com/random)",
+            backgroundImage: `url(${usersLoginGraphic})`,
             backgroundRepeat: "no-repeat",
             backgroundColor: (t) =>
               t.palette.mode === "light"
                 ? t.palette.grey[50]
                 : t.palette.grey[900],
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            backgroundSize: "contain",
+            backgroundPosition: "center"
           }}
         />
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>

@@ -64,7 +64,8 @@ const schemas = {
       .typeError("password must be a string"),
     password2: yup
       .string()
-      .oneOf([yup.ref("password"), null], "Passwords must match"),
+      .oneOf([yup.ref("password"), null], "Passwords must match")
+    .required('password2 is required'),
     areaCode: yup
       .string()
       .required("areaCode is required")

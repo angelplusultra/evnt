@@ -55,11 +55,21 @@ const userSchema = new mongoose.Schema(
       default: [],
       ref: 'Event',
     },
+    attendingEvents: {
+      type: [{
+        event: mongoose.Schema.Types.ObjectId,
+        status: String,
+      }],
+      default: [],
+      ref: 'Event',
+    },
     performingEvents: {
       type: [{
         event: mongoose.Schema.Types.ObjectId,
         status: String,
       }],
+      default: undefined,
+      
       ref: 'Event',
     },
     images: {

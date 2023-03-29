@@ -40,7 +40,7 @@ const controller = {
       res.status(400);
       throw new Error("Username not available");
     }
-
+    console.log(typeof parsedIsArtist, typeof isArtist)
     const hash = await helpers.hashPassword(password, res);
 
     const userID = new mongoose.Types.ObjectId();
@@ -52,10 +52,13 @@ const controller = {
       isArtist,
       areaCode,
       locationTracking,
-      artistName: parsedIsArtist ? artistName : undefined,
-      ...(parsedIsArtist && { performingEvents: [] }),
       activity: [{ activityDetails: `${userID} joined Evnt!`, user: userID }],
     });
+    // performingEvents field was still being added to non-artists, this is to ensure its removed for users
+    if (isArtist === true) {
+      newUser.performingEvents = [];
+      newUser.artistName = artistName;
+    }
     const savedUser = await newUser.save();
 
     if (!savedUser) {
@@ -75,6 +78,8 @@ const controller = {
     await helpers.genEmail({ username, email, res, verifyToken });
 
     res.status(200).json({
+      newUser,
+      savedUser,
       message:
         "You have successfully signed up. Please check your email to verify your account",
     });

@@ -12,7 +12,6 @@ import {
   CardActions,
   CardMedia,
   CardContent,
-  CardHeader,
 } from "@mui/material";
 import EventCard from "../components/ProfilePage/EventCard";
 import User from "../components/User";
@@ -228,13 +227,7 @@ function ProfilePage() {
             <Box sx={{
               display: 'flex',
               alignItems: 'center',
-              overflowX: 'scroll',
-              gap: 10,
-              borderRadius: 5,
-              border: 1,
-              m: 5,
-
-                p: 5
+              
             }}>
               {results.length > 0 &&
                 results?.map((result) => {
@@ -242,25 +235,25 @@ function ProfilePage() {
 
                   if (result.isSuccess) {
                     const { imagePath } = result.data.data.images.posters[0];
-                    const { title, description, lineup } = result.data.data;
+                    const { title, description } = result.data.data;
                     return (
                       <Box>
-                        <Card sx={{ width: 300 }}>
-                          <CardMedia sx={{ height: 250 }} image={imagePath} />
+                        <Card sx={{ maxWidth: 250 }}>
+                          <CardMedia sx={{ height: 200 }} image={imagePath} />
                           <CardContent>
-                      <Typography fontSize={15}>{title}</Typography>
-                            <Divider sx={{
-                              my:1 
-                            }}  />
-                      <Box>
-                      {lineup.slice(0, 3).map(( artist, i ) => (
-                        <Typography variant="body2" color='text.secondary'>{i + 1}. {artist}</Typography>
-                      ))}
-                      {lineup.length > 3 && <Typography variant='body2'>+ more</Typography>}
-                      </Box>
+                            <Typography
+                              gutterBottom
+                              variant="h5"
+                              component="div"
+                            >
+                              {title}{" "}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {description}
+                            </Typography>
                           </CardContent>
-                          <CardActions sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}} >
-                            <Button  size="small">See Event</Button>
+                          <CardActions>
+                            <Button size="small">See Event</Button>
                           </CardActions>
                         </Card>
                       </Box>

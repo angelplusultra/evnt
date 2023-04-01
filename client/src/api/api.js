@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const domain = process.env.REACT_APP_DOMAIN || "http://localhost:5000";
+export const domain = process.env.SERVER_URL || "http://localhost:5000";
 
 const endpoints = {
   signUp: "/auth/signup",

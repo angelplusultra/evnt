@@ -32,23 +32,13 @@ function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const attendingEventsResults = useQueries({
+  const results = useQueries({
     queries: userDetails?.attendingEvents?.map((event) => ({
       queryKey: ["attendingEvent", event.event],
       queryFn: () =>
         api.query(user).get(api.endpoints.getSingleEvent + event.event),
     })),
   });
-  const createdEventsResults = useQueries({
-    queries: userDetails?.createdEvents?.map((eventId) => ({
-      queryKey: ["attendingEvent", eventId],
-      queryFn: () =>
-        api.query(user).get(api.endpoints.getSingleEvent + eventId),
-    })),
-  });
-
-console.log({ createdEventsResults })
-
 
   const handleOpen = () => setModalOpen(true);
   const handleClose = () => setModalOpen(false);
@@ -230,65 +220,8 @@ console.log({ createdEventsResults })
         </Box>
       </Box>
 
-    <Box sx={{
-      my: 5,
-      borderBottom: 1
-    }}>
-    <Typography variant="h5">Created Events</Typography>
-    </Box>
       <Box>
-        {userDetails.createdEvents.length > 0 &&(
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: 'space-evenly',
-                flexWrap: 'wrap',
-                borderRadius: 5,
-                border: "black thin",
-                my: 5,
-                boxShadow: 1,
-                p: 5
-              
-              }}
-            >
-              {createdEventsResults.length > 0 &&
-                createdEventsResults?.map((result) => {
-                  console.log({ result });
-
-                  if (result.isSuccess) {
-                    const { imagePath } = result.data.data.images.posters[0];
-                    const { title, description, lineup } = result.data.data;
-                    return (
-                      <Box sx={{
-                        m:1
-                      }}>
-                        <Card sx={{ width: 300 }}>
-                          <CardMedia sx={{ height: 300 }} image={imagePath} />
-                          <CardContent>
-                            <Typography fontSize={15}>{title}</Typography>
-                            <Divider
-                              sx={{
-                                my: 1,
-                              }}
-                            />
-                          </CardContent>
-                          <CardActions
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <Button size="small">See Event</Button>
-                          </CardActions>
-                        </Card>
-                      </Box>
-                    );
-                  }
-                })}
-            </Box>
-          )}
+        {userDetails.createdEvents.length > 0 && <Box>Event Carousel</Box>}
 
         <Box>
     <Box sx={{
@@ -301,27 +234,24 @@ console.log({ createdEventsResults })
               sx={{
                 display: "flex",
                 alignItems: "center",
-                justifyContent: 'space-evenly',
-                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                flexWrap: "wrap",
                 borderRadius: 5,
                 border: "black thin",
                 my: 5,
                 boxShadow: 1,
-                p: 5
               
               }}
             >
-              {attendingEventsResults.length > 0 &&
-                attendingEventsResults?.map((result) => {
+              {results.length > 0 &&
+                results?.map((result) => {
                   console.log({ result });
 
                   if (result.isSuccess) {
                     const { imagePath } = result.data.data.images.posters[0];
                     const { title, description, lineup } = result.data.data;
                     return (
-                      <Box sx={{
-                        m:1
-                      }}>
+                      <Box>
                         <Card sx={{ width: 300 }}>
                           <CardMedia sx={{ height: 300 }} image={imagePath} />
                           <CardContent>

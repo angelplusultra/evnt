@@ -24,6 +24,7 @@ import places from "../../data/counties_list.json";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "../../context/userContext.js";
+import artistSignUpGraphic from '../../assets/images/artist_signup.PNG'
 
 function Copyright(props) {
  return (
@@ -139,7 +140,7 @@ function ArtistSignUp() {
      sm={4}
      md={7}
      sx={{
-      backgroundImage: "url(https://source.unsplash.com/random/?concert)",
+      backgroundImage: `url( ${artistSignUpGraphic} )`,
       backgroundRepeat: "no-repeat",
       backgroundColor: (t) =>
        t.palette.mode === "light" ? t.palette.grey[50] : t.palette.grey[900],

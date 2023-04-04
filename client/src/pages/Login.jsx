@@ -22,7 +22,7 @@ import { useNavigate, Navigate } from "react-router-dom";
 import { useEffect, useContext } from "react";
 import { UserContext } from "../context/userContext";
 import { NavLink } from "react-router-dom";
-import usersLoginGraphic from '../assets/evnt_users.png'
+import usersLoginGraphic from '../assets/images/login_graphic.PNG'
 
 function Copyright(props) {
 
@@ -120,7 +120,7 @@ export default function SignInSide() {
               t.palette.mode === "light"
                 ? t.palette.grey[50]
                 : t.palette.grey[900],
-            backgroundSize: "contain",
+            backgroundSize: "cover",
             backgroundPosition: "center"
           }}
         />

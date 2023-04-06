@@ -8,7 +8,8 @@ import {
   Avatar,
   Button,
   Box,
-  CardMedia
+  CardMedia,
+  Divider,
 } from "@mui/material";
 import { useContext } from "react";
 import { UserContext } from "../context/userContext";
@@ -37,61 +38,67 @@ function EventCard({ host, title, location, id, poster }) {
   }
   if (data) {
     return (
-      <Card sx={{ minWidth: 275 }}>
       <Box
-      display={"flex"}
-      justifyContent="space-between"
-      alignItems={"center"}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+          boxShadow: 5,
+          gap: 5,
+          borderRadius: 5,
+          p: 5
+        }}
       >
+        <Box width={300} height={300} component="img" src={poster} />
 
-      
-        <CardContent>
+        {/* RIGHT CONTAINER */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: 'auto',
+            height: 300
+          }}
+        >
+          {/* TITLE, LOCATION AND USER CONTAINER*/}
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "left",
-              gap: 1,
+              justifyContent: "space-evenly",
+              width: "100%",
+              p: 2,
+              borderBottom: 'solid black'
+              
             }}
           >
-            <Avatar
-              sx={{ bgcolor: "secondary", height: 40, width: 40 }}
-              alt="Remy Sharp"
-              src="../../
-      public/nopic.jpg"
+            <Typography>{title}</Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+              }}
             >
-              {data.username.charAt(0)}
-            </Avatar>
-            <Typography
-              sx={{ fontSize: 14 }}
-              color="text.secondary"
-              gutterBottom
-            >
-              {data.username}
-            </Typography>
+              <Typography>{data.username}</Typography>
+              <Avatar>A</Avatar>
+            </Box>
           </Box>
 
-          <Typography variant="h5" component="div">
-            {title}
-          </Typography>
-          <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            {location.city}
-          </Typography>
-          <Typography variant="body2">Description</Typography>
-        </CardContent>
-        <Box>
-            <img src={poster} />
+          {/* DESCRIPTION, BUTTONS, LINEUP + MORE*/}
+          <Box>
+            <Typography>
+              Lorem ipsum dolor sit amet, officia excepteur ex fugiat
+              reprehenderit enim labore culpa sint ad nisi Lorem pariatur mollit
+              ex esse exercitation amet. Nisi anim cupidatat excepteur officia.
+              Reprehenderit nostrud nostrud ipsum Lorem est aliquip amet
+              voluptate voluptate dolor minim nulla est proident. Nostrud
+              officia pariatur ut officia.
+            </Typography>
+          </Box>
         </Box>
       </Box>
-        <CardActions>
-          <Button
-            onClick={() => navigate(`/events/${id}`, { state: data })}
-            size="small"
-          >
-            See Event
-          </Button>
-        </CardActions>
-      </Card>
     );
   }
 }

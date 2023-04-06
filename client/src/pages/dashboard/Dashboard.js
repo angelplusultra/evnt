@@ -163,12 +163,18 @@ function DashboardContent({ data }) {
         >
           <Toolbar />
           <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={2}>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 5
+            
+              
+            }}>
               {data.map((ev, i) => {
 
                 console.log(ev)
                 return (
-                  <Grid key={i} item xs={12} md={12} lg={12}>
                     <EventCard
                       host={ev.host}
                       key={i}
@@ -178,10 +184,9 @@ function DashboardContent({ data }) {
                       poster={ev.images.posters[0].imagePath}
                       id={ev._id}
                     />
-                  </Grid>
                 );
               })}
-            </Grid>
+            </Box>
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
